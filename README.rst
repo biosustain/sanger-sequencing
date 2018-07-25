@@ -57,7 +57,7 @@ from sample identifiers to sequence records (``.ab1`` files).
     
 .. summary-end
 
-You can fine the complete documentation at: https://sanger-sequencing.readthedocs.io.
+You can find the complete documentation at: https://sanger-sequencing.readthedocs.io.
 
 Copyright
 =========
