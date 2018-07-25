@@ -21,3 +21,7 @@ docs:
 	sphinx-apidoc -o docs/ src/sanger_sequencing
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+
+release: clean
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
