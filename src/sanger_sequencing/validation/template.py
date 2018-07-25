@@ -40,7 +40,7 @@ def validate_template(template: DataFrame) -> List[Dict]:
     """
     Validate that the template respects the desired schema.
 
-    Make use of goodtables[1_] in order to validate the template data frame
+    Make use of goodtables [1]_ in order to validate the template data frame
     against the chosen specification.
 
     Parameters

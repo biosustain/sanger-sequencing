@@ -1,6 +1,6 @@
-===============================
+========================
 Sanger Sequence Analysis
-===============================
+========================
 
 .. image:: https://img.shields.io/pypi/v/sanger-sequencing.svg
         :target: https://pypi.python.org/pypi/sanger-sequencing
@@ -16,11 +16,48 @@ Sanger Sequence Analysis
      :target: https://pyup.io/repos/github/biosustain/sanger-sequencing/
      :alt: Updates
 
-Semi-automated Sanger sequence analysis for transformation confirmation.
+.. summary-start
 
-* Documentation: https://sanger-sequencing.readthedocs.io.
+Semi-automated Sanger sequence analysis for plasmid verification.
 
-.. _`GitHub repository`: https://github.com/biosustain/sanger-sequencing
+This package is the result of an internal hackathon at the Novo Nordisk 
+Foundation Center for Biosustainability and represents our approach to 
+improving the workflow of geneticists who need to verify plasmid 
+constructs by Sanger sequencing.
+
+Getting Started
+===============
+
+From a Python environment that has Python 3.6 or later installed you can easily 
+
+.. code-block:: console
+
+    $ pip install sanger-sequencing
+
+or use ``pip3`` depending on your environment.
+
+When you import the package, two main components are made available to you: a
+configuration class that you can instantiate to set some global configuration
+values and a high level analysis interface.
+
+.. code-block:: python
+
+    import sanger_sequencing
+    
+    config = sanger_sequencing.Configuration()
+    print(config.threshold)
+    print(config.output)
+    
+You can read more about the meaning of those attributes in the configuration 
+documentation. The main entry point for doing any kind of analysis is the 
+``sanger_verification`` function. This function requires three arguments: a 
+template table of what to analyze, a mapping from plasmid identifiers to 
+their sequence records (typically coming from Genbank files), and a mapping 
+from sample identifiers to sequence records (``.ab1`` files).
+    
+.. summary-end
+
+You can fine the complete documentation at: https://sanger-sequencing.readthedocs.io.
 
 Copyright
 =========
@@ -31,8 +68,9 @@ Copyright
 Credits
 =======
 
-This package was created with Cookiecutter_ and the `DD-DeCaF/cookiecutter-decaf-python`_ project template.
+This package was created using cookiecutter_ and the 
+`DD-DeCaF/cookiecutter-decaf-python`_ project template.
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`DD-DeCaF/cookiecutter-decaf-python`: https://github.com/DD-DeCaF/cookiecutter-decaf-python
 

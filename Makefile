@@ -1,21 +1,8 @@
 .PHONY: clean docs help
 .DEFAULT_GOAL := help
 
-define BROWSER_PYSCRIPT
-import sys
-import webbrowser
-from os.path import abspath
-try:
-	from urllib import pathname2url
-except ImportError:
-	from urllib.request import pathname2url
-
-webbrowser.open("file://" + pathname2url(abspath(sys.argv[1])))
-endef
-export BROWSER_PYSCRIPT
-
 ## Remove all build and Python artifacts
-clean: clean-build clean-pyc clean-test
+clean: clean-build clean-pyc
 
 ## Remove build artifacts
 clean-build:
@@ -31,11 +18,6 @@ clean-pyc:
 ## Generate Sphinx HTML documentation
 docs:
 	rm -f docs/sanger-sequencing.rst docs/modules.rst
-	sphinx-apidoc -o docs/ sanger-sequencing
+	sphinx-apidoc -o docs/ src/sanger_sequencing
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
-
-## Compile the docs watching for changes
-servedocs: docs
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .

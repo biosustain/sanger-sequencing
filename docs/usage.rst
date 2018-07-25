@@ -2,6 +2,8 @@
 Usage
 =====
 
-To use Automated Mix2Seq Analysis in a project::
+To use Sanger Sequence Analysis in a project::
 
-    import mix2seq
+    import sanger_sequencing
+    
+    help(sanger_sequencing.sanger_verification)

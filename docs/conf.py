@@ -13,7 +13,9 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 
-from os.path import join, pardir
+import sys
+from os.path import join, pardir, dirname
+sys.path.insert(0, join(dirname(__file__), pardir, 'src'))
 
 
 # -- Project information -----------------------------------------------------
@@ -41,8 +43,8 @@ author = 'Novo Nordisk Foundation Center for Biosustainability, Technical Univer
 # release = versioneer.get_version()
 # # The short X.Y version assumes semantic versioning.
 # version = ".".join(release.split('.', 2)[:2])
-release = '1.0.0'
-version = '1.0'
+release = '0.1.0'
+version = '0.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -56,11 +58,11 @@ version = '1.0'
 # ones.
 extensions = [
     'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
+    # 'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.napoleon',
-    'autoapi.extension'
+    'sphinx.ext.autodoc',
+    'sphinxcontrib.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -173,14 +175,9 @@ texinfo_documents = [
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+# intersphinx_mapping = {'https://docs.python.org/': None}
 
 # -- Options for napoleon extension ---------------------------------------
 
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
-
-# -- Options for autoapi extension ---------------------------------------
-
-autoapi_type = 'python'
-autoapi_dirs = [join(pardir, 'src', 'sanger_sequencing')]
