@@ -1,0 +1,69 @@
+language: python
+sudo: false
+python:
+  - "3.6"
+
+git:
+  depth: 2
+
+cache:
+  pip: true
+
+branches:
+  only:
+    - master
+    - devel
+    - "/^\\d+\\.\\d+\\.\\d+[a]?\\d*$/"
+
+env:
+  global:
+    - GITHUB_REPO=biosustain/sanger-sequencing
+
+matrix:
+  fast_finish: true
+
+install:
+  - pip install --upgrade pip setuptools wheel tox tox-travis
+
+script:
+  - tox -- --cov=sanger_sequencing --cov-report xml --cov-report term
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+stages:
+  - test
+  - name: deploy
+    if: tag IS present
+
+jobs:
+  fast_finish: true
+  include:
+  - stage: deploy
+    install: skip
+    script:
+    - echo "Deploying sanger_sequencing"
+    after_success:
+    -
+    deploy:
+    - provider: pypi
+      skip_cleanup: true
+      distributions: sdist bdist_wheel
+      user: midnighter
+      password: $PYPI_PASSWORD
+      on:
+        tags: true
+        repo: $GITHUB_REPO
+    - provider: releases
+      skip_cleanup: true
+      api_key: $GITHUB_TOKEN
+      body: "Please see https://github.com/${GITHUB_REPO}/blob/${TRAVIS_TAG}/CHANGELOG.rst for the full release notes."
+      on:
+        tags: true
+        repo: $GITHUB_REPO
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+    on_pull_requests: false

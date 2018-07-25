@@ -1,0 +1,4 @@
+Sphinx
+sphinxcontrib-napoleon
+sphinx-autoapi
+sphinx-bootstrap-theme

@@ -1,0 +1,32 @@
+{
+  "fields": [
+    {
+      "name": "plasmid",
+      "title": "Plasmid Identifier",
+      "description": "The plasmid identifier must correspond to the file name of a respective Genbank file.",
+      "type": "string",
+      "constraints": {
+        "required": true
+      }
+    },
+    {
+      "name": "primer",
+      "title": "Primer Identifier",
+      "description": "The primer identifier is used to determine replicate samples.",
+      "type": "string",
+      "constraints": {
+        "required": true
+      }
+    },
+    {
+      "name": "sample",
+      "title": "Sample Identifier",
+      "description": "The sample identifier must correspond to the file name of a respective Sanger sequencing result and must be unique.",
+      "type": "string",
+      "constraints": {
+        "required": true,
+        "unique": true
+      }
+    }
+  ]
+}
