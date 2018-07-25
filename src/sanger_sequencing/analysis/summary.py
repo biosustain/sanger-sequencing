@@ -27,6 +27,7 @@ from pandas import DataFrame, concat
 
 from ..config import Configuration
 
+
 __all__ = ("summarize_plasmid_conflicts", "concatenate_sample_reports")
 
 LOGGER = logging.getLogger(__name__)
@@ -36,6 +37,7 @@ STOP_CODONS = frozenset(ambiguous_dna_by_name["Standard"].stop_codons)
 
 
 def concatenate_sample_reports(reports):
+    """Concatenate many data frames into one."""
     data = []
     for sample in reports:
         df = sample.get("details")
@@ -105,6 +107,7 @@ def confirm_conflict(conflict_type, row, cover, threshold):
 
 def determine_effects(row, plasmid, previous, following):
     """
+    Post-process conflicts and categorize them.
 
     Parameters
     ----------
@@ -134,8 +137,7 @@ def determine_effects(row, plasmid, previous, following):
             # Does the new codon cause an amino acid change?
             seq = feat.extract(plasmid)
             # Translate plasmid position into feature position.
-            feat_pos = int(row.plasmid_pos) - \
-                       feat.location.start.position
+            feat_pos = int(row.plasmid_pos) - feat.location.start.position
             feat_pos -= 1  # Transform to 0-indexing.
             codon_pos = feat_pos % 3
             codon = list(seq[

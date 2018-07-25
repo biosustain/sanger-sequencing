@@ -24,6 +24,7 @@ __all__ = ("RepositoryClient",)
 
 
 class RepositoryClient(ABC):
+    """Provide a pythonic abstract base interface."""
 
     @abstractmethod
     def get_plasmid_ids(self):

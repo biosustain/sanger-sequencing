@@ -24,10 +24,10 @@ __all__ = ("BenchlingClient",)
 
 
 class BenchlingClient(RepositoryClient):
-    """"""
+    """Provide a pythonic interface to the Benchling API."""
 
     def __init__(self):
-        """"""
+        """Initialize a Benchling client."""
         super().__init__()
 
     def get_plasmid_ids(self):

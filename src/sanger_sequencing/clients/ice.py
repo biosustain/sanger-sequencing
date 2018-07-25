@@ -24,10 +24,10 @@ __all__ = ("ICEClient",)
 
 
 class ICEClient(RepositoryClient):
-    """"""
+    """Provide a pythonic interface to the ICE API."""
 
     def __init__(self):
-        """"""
+        """Initialize the ICE client."""
         super().__init__()
 
     def get_plasmid_ids(self):

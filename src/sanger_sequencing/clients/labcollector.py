@@ -35,7 +35,7 @@ __all__ = ("LabCollectorClient",)
 
 
 class LabCollectorClient(RepositoryClient):
-    """"""
+    """Provide a pythonic interface to the LabCollector API v2."""
 
     COUNT_PARAMETERS = {
         "fields": "count"
@@ -68,6 +68,7 @@ class LabCollectorClient(RepositoryClient):
         kwargs : optional
             Additional keyword arguments are used to update the default
             header for making requests to the API.
+
         """
         super().__init__()
         self.api = api

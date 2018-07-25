@@ -27,8 +27,6 @@ install:
 
 script:
   - tox -- --cov=sanger_sequencing --cov-report xml --cov-report term
-
-after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 stages:
@@ -42,9 +40,7 @@ jobs:
   - stage: deploy
     install: skip
     script:
-    - echo "Deploying sanger_sequencing"
-    after_success:
-    -
+    - echo "Deploying sanger-sequencing."
     deploy:
     - provider: pypi
       skip_cleanup: true

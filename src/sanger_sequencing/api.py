@@ -42,20 +42,31 @@ def sanger_verification(template: DataFrame,
                         samples: Dict[str, SeqRecord]
                         ) -> List[Dict]:
     """
+    Perform a complete Sanger verification for many plasmids and sample reads.
 
     Parameters
     ----------
-    template
-    plasmids
-    samples
+    template : pandas.DataFrame
+        A template table with three columns: plasmid, primer, sample which
+        are all identifiers.
+    plasmids : dict
+        A mapping from plasmid identifiers to sequence records.
+    samples : dict
+        A mapping from sample identifiers to sequence records.
 
     Returns
     -------
+    list
+        A list of dictionaries that are each a plasmid report.
 
     Raises
     ------
     AssertionError
         All function arguments are extensively validated and may raise errors.
+
+    See Also
+    --------
+    plasmid_report
 
     """
     LOGGER.info("Validate template.")
@@ -80,6 +91,30 @@ def plasmid_report(plasmid_id: str,
                    sequence: SeqRecord,
                    template: DataFrame,
                    samples: Dict[str, SeqRecord]) -> Dict:
+    """
+    Create an analysis report for a single plasmid and one or more reads.
+
+    The plasmid report contains detailed reports on each sample read
+    performed. It then evaluates each sequence alignment conflict using
+    information from other samples as appropriate.
+
+    Parameters
+    ----------
+    plasmid_id : str
+        The plasmid identifier.
+    sequence : Bio.SeqRecord.SeqRecord
+        The plasmid's sequence record.
+    template : pandas.DataFrame
+        A part of the template table concerning this plasmid only.
+    samples : dict
+        A mapping from sample identifiers to sequence records.
+
+    Returns
+    -------
+    dict
+        An individual plasmid report.
+
+    """
     LOGGER.info("Analyze plasmid '%s'.", plasmid_id)
     report = {
         "id": plasmid_id,
@@ -103,6 +138,28 @@ def sample_report(sample_id: str,
                   primer_id: str,
                   plasmid_id: str,
                   plasmid_sequence: SeqRecord) -> Dict:
+    """
+    Create an analysis report for a single sample read.
+
+    Parameters
+    ----------
+    sample_id : str
+        The sample identifier.
+    sample_sequence :  Bio.SeqRecord.SeqRecord
+        The sample's sequence record.
+    primer_id : str
+        The primer identifier.
+    plasmid_id : str
+        The plasmid identifier.
+    plasmid_sequence : Bio.SeqRecord.SeqRecord
+        The plasmid's sequence record.
+
+    Returns
+    -------
+    dict
+        An individual sample report.
+
+    """
     LOGGER.info("Analyze sample '%s'.", sample_id)
     report = {
         "id": sample_id,

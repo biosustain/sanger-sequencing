@@ -52,7 +52,21 @@ class Configuration(metaclass=Singleton):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, threshold=50.0, output=mkdtemp(), **kwargs):
+        """
+        Initialize the singleton configuration object.
+
+        Parameters
+        ----------
+        threshold : float, optional
+            Threshold on the Phred quality. The Phred score scales between 0 and
+            62. A typical good Sanger sequencing read has a score of 55.
+        output : str or pathlib.Path, optional
+            Output directory for alignment files.
+        kwargs : dict
+            Passed to the ``super()`` class.
+
+        """
         super().__init__(**kwargs)
-        self.threshold = 50.0
-        self.output = mkdtemp()
+        self.threshold = threshold
+        self.output = output

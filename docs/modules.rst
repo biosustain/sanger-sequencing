@@ -1,5 +1,5 @@
-Reference
-=========
+sanger_sequencing
+=================
 
 .. toctree::
    :maxdepth: 4

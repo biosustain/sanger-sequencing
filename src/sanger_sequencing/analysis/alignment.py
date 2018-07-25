@@ -25,7 +25,7 @@ from typing import List, get_type_hints
 from Bio import AlignIO
 from Bio.Emboss.Applications import WaterCommandline
 from Bio.SeqRecord import SeqRecord
-from numpy import nan, array
+from numpy import array, nan
 from pandas import DataFrame
 
 from ..config import Configuration
