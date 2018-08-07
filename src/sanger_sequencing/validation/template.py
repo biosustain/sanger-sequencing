@@ -110,5 +110,5 @@ def drop_missing_records(
     if (~sample_mask).any():
         LOGGER.error(
             "The following sample(s) have no corresponding sequence record: "
-            "%s.", ", ".join(template.loc[plasmid_mask, "sample"]))
+            "%s.", ", ".join(template.loc[sample_mask, "sample"]))
     return template.loc[plasmid_mask & sample_mask, :]
