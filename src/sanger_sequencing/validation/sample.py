@@ -24,7 +24,7 @@ from Bio.SeqRecord import SeqRecord
 
 __all__ = ("validate_sample",)
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def validate_sample(sample: SeqRecord):

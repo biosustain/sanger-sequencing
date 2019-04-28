@@ -31,7 +31,7 @@ from . import schemata
 
 __all__ = ("validate_template", "drop_missing_records")
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 with open_text(schemata, "template.json", encoding="utf-8") as file_handle:
     TEMPLATE_SCHEMA = json.load(file_handle)
 
@@ -104,14 +104,14 @@ def drop_missing_records(
     """
     plasmid_mask = template["plasmid"].isin(plasmids)
     if (~plasmid_mask).any():
-        LOGGER.error(
+        logger.error(
             "The following plasmid(s) have no corresponding sequence record: "
             "%s.",
             ", ".join(template.loc[plasmid_mask, "plasmid"]),
         )
     sample_mask = template["sample"].isin(samples)
     if (~sample_mask).any():
-        LOGGER.error(
+        logger.error(
             "The following sample(s) have no corresponding sequence record: "
             "%s.",
             ", ".join(template.loc[sample_mask, "sample"]),

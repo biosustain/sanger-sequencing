@@ -25,13 +25,13 @@ from depinfo import print_dependencies
 
 __all__ = ("log_errors", "show_versions")
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def log_errors(errors: Iterable[Dict]):
     """Log all error objects from an iterable."""
     for err in errors:
-        LOGGER.error("(%s) %s", err["code"], err["message"])
+        logger.error("(%s) %s", err["code"], err["message"])
 
 
 def show_versions():

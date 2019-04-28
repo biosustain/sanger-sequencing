@@ -25,7 +25,7 @@ from Bio.SeqRecord import SeqRecord
 
 __all__ = ("validate_plasmid",)
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def validate_plasmid(plasmid: SeqRecord, primer_ids: Iterable[str]):

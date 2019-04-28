@@ -34,7 +34,7 @@ from .helpers import log_errors
 
 __all__ = ("sanger_verification", "plasmid_report", "sample_report")
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def sanger_verification(
@@ -70,19 +70,19 @@ def sanger_verification(
     plasmid_report
 
     """
-    LOGGER.info("Validate template.")
+    logger.info("Validate template.")
     errors = validation.validate_template(template)
     if len(errors) > 0:
         log_errors(errors)
         raise AssertionError("Invalid analysis template.")
-    LOGGER.info("Validate plasmids.")
+    logger.info("Validate plasmids.")
     for plasmid in plasmids.values():
         validation.validate_plasmid(plasmid, [])
-    LOGGER.info("Validate samples.")
+    logger.info("Validate samples.")
     for sample in samples.values():
         validation.validate_sample(sample)
     template = validation.drop_missing_records(template, plasmids, samples)
-    LOGGER.info("Generate reports.")
+    logger.info("Generate reports.")
     return [
         plasmid_report(plasmid_id, plasmids[plasmid_id], sub, samples)
         for plasmid_id, sub in template.groupby(
@@ -121,7 +121,7 @@ def plasmid_report(
         An individual plasmid report.
 
     """
-    LOGGER.info("Analyze plasmid '%s'.", plasmid_id)
+    logger.info("Analyze plasmid '%s'.", plasmid_id)
     report = {
         "id": plasmid_id,
         "name": sequence.name,
@@ -137,7 +137,7 @@ def plasmid_report(
         ],
     }
     # Post-process reports in order to classify conflicts.
-    LOGGER.debug("Concatenate the detailed sample reports.")
+    logger.debug("Concatenate the detailed sample reports.")
     total = analysis.concatenate_sample_reports(report["samples"])
     for rep in report["samples"]:
         rep["conflicts"] = analysis.summarize_plasmid_conflicts(
@@ -175,7 +175,7 @@ def sample_report(
         An individual sample report.
 
     """
-    LOGGER.info("Analyze sample '%s'.", sample_id)
+    logger.info("Analyze sample '%s'.", sample_id)
     report = {
         "id": sample_id,
         "primer": primer_id,

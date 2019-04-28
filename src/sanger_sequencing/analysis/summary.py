@@ -30,7 +30,7 @@ from ..config import Configuration
 
 __all__ = ("summarize_plasmid_conflicts", "concatenate_sample_reports")
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 CODON_TABLE = ambiguous_dna_by_name["Standard"].forward_table
 START_CODONS = frozenset(ambiguous_dna_by_name["Standard"].start_codons)
 STOP_CODONS = frozenset(ambiguous_dna_by_name["Standard"].stop_codons)
@@ -55,7 +55,7 @@ def determine_type(row):
             "Detected a gap in the alignment. Only expecting single "
             "position conflicts."
         )
-        LOGGER.error(msg)
+        logger.error(msg)
         raise ValueError(msg)
     elif isnan(row.plasmid_pos):
         return "insertion"
@@ -77,7 +77,7 @@ def confirm_conflict(conflict_type, row, cover, threshold):
     num_invalidated = 0
     for sample_id, sub in cover.groupby("sample", as_index=False, sort=False):
         if determine_quality(sub, threshold) == "low":
-            LOGGER.debug(
+            logger.debug(
                 "Ignoring low quality sample region for conflict "
                 "confirmation."
             )
@@ -86,18 +86,18 @@ def confirm_conflict(conflict_type, row, cover, threshold):
         # conflict site. However, due to sequence read trimming we may hit
         # the end of the sequence alignment.
         if len(sub) < 3:
-            LOGGER.debug(
+            logger.debug(
                 "Ignoring incomplete sample region (less than three "
                 "positions)."
             )
             continue
         cmp = sub.iloc[1]
         if not cmp.snp:
-            LOGGER.debug("Not a conflict site.")
+            logger.debug("Not a conflict site.")
             num_invalidated += 1
             continue
         if determine_type(cmp) != conflict_type:
-            LOGGER.debug("Different type of conflict site.")
+            logger.debug("Different type of conflict site.")
             num_invalidated += 1
             continue
         if (cmp.sample_chr == row.sample_chr) and (
@@ -150,7 +150,7 @@ def determine_effects(row, plasmid, previous, following):
                 seq[(feat_pos - codon_pos) : (feat_pos - codon_pos + 3)]
             )
             if len(codon) < 3:
-                LOGGER.error(
+                logger.error(
                     "SNP at the beginning or end of CDS. " "Unknown effect."
                 )
                 effects.append("Unknown")
@@ -160,13 +160,13 @@ def determine_effects(row, plasmid, previous, following):
                 plasmid_aa = CODON_TABLE[cdn]
             except (KeyError, ValueError):
                 if cdn in START_CODONS:
-                    LOGGER.warning("Start codon hit on plasmid.")
+                    logger.warning("Start codon hit on plasmid.")
                     plasmid_aa = "START"
                 elif cdn in STOP_CODONS:
-                    LOGGER.warning("Stop codon hit on plasmid.")
+                    logger.warning("Stop codon hit on plasmid.")
                     plasmid_aa = "STOP"
                 else:
-                    LOGGER.error("Unknown codon '%s' on plasmid.", cdn)
+                    logger.error("Unknown codon '%s' on plasmid.", cdn)
                     plasmid_aa = "UNKNOWN"
             codon[codon_pos] = row.sample_chr
             cdn = "".join(codon)
@@ -174,13 +174,13 @@ def determine_effects(row, plasmid, previous, following):
                 sample_aa = CODON_TABLE[cdn]
             except (KeyError, ValueError):
                 if cdn in START_CODONS:
-                    LOGGER.warning("Change to start codon on sample.")
+                    logger.warning("Change to start codon on sample.")
                     sample_aa = "START"
                 elif cdn in STOP_CODONS:
-                    LOGGER.warning("Change to stop codon on sample.")
+                    logger.warning("Change to stop codon on sample.")
                     sample_aa = "STOP"
                 else:
-                    LOGGER.error("Unknown codon '%s' on sample.", cdn)
+                    logger.error("Unknown codon '%s' on sample.", cdn)
                     sample_aa = "UNKNOWN"
             effects.append(f"{plasmid_aa} -> {sample_aa}")
     return features, effects
@@ -206,7 +206,7 @@ def summarize_plasmid_conflicts(
     config = Configuration()
     conflicts = []
     # Show what happens around a mismatch location on all samples.
-    LOGGER.info("Assessing %d conflicts.", total["snp"].sum())
+    logger.info("Assessing %d conflicts.", total["snp"].sum())
     for row in sample.loc[sample["snp"], :].itertuples():
         conflict = row._asdict()
         del conflict["snp"]

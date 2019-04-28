@@ -33,7 +33,7 @@ from ..config import Configuration
 
 __all__ = ("emboss_alignment", "alignment_to_table")
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def alignment_to_table(
@@ -130,24 +130,24 @@ def emboss_alignment(
     outfile = join(config.output, f"{sample_id}_{plasmid_id}.txt")
     cmd.outfile = outfile
     stdout, stderr = cmd()
-    LOGGER.debug(stdout)
-    LOGGER.debug(stderr)  # Unfortunately, normal messages are sent to stderr...
+    logger.debug(stdout)
+    logger.debug(stderr)  # Unfortunately, normal messages are sent to stderr...
 
     align = AlignIO.read(cmd.outfile, "emboss")
     # Get coordinates manually because biopython ...
     identity = align.annotations["identity"] / len(sample_sequence)
-    LOGGER.debug("Sequence identity is %0.2g.", identity)
+    logger.debug("Sequence identity is %0.2g.", identity)
     if identity < 0.9:
-        LOGGER.info("Trying reverse complement!")
+        logger.info("Trying reverse complement!")
         cmd.bsequence = f"asis:{sample_sequence.reverse_complement().seq}"
         rev_outfile = join(config.output, "{sample_id}_{plasmid_id}_rev.txt")
         cmd.outfile = rev_outfile
         stdout, stderr = cmd()
-        LOGGER.debug(stdout)
-        LOGGER.debug(stderr)
+        logger.debug(stdout)
+        logger.debug(stderr)
         rev_align = AlignIO.read(cmd.outfile, "emboss")
         rev_identity = rev_align.annotations["identity"] / len(sample_sequence)
-        LOGGER.debug("Complement sequence identity is %0.2g.", rev_identity)
+        logger.debug("Complement sequence identity is %0.2g.", rev_identity)
     else:
         rev_identity = -1.0
         rev_align = None
@@ -155,10 +155,10 @@ def emboss_alignment(
     if identity > rev_identity:
         with open(outfile) as file_h:
             align.positions = extract_emboss_positions(file_h.readlines())
-        LOGGER.debug(str(align.positions))
+        logger.debug(str(align.positions))
         return align
     else:
         with open(rev_outfile) as file_h:
             rev_align.positions = extract_emboss_positions(file_h.readlines())
-        LOGGER.debug(str(rev_align.positions))
+        logger.debug(str(rev_align.positions))
         return rev_align

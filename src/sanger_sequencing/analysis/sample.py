@@ -27,12 +27,12 @@ from ..config import Configuration
 
 __all__ = ("trim_sample",)
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def trim_sample(seq: SeqRecord) -> (int, SeqRecord, array, int, float):
     """Cut off low quality ends of a Sanger sequencing record."""
-    LOGGER.debug("Trim sample.")
+    logger.debug("Trim sample.")
     config = Configuration()
     scores = asarray(seq.letter_annotations["phred_quality"])
     median = float(nanmedian(scores))
@@ -41,13 +41,13 @@ def trim_sample(seq: SeqRecord) -> (int, SeqRecord, array, int, float):
             f"The median Phred quality ({median}) is below the "
             f"required threshold ({config.threshold})."
         )
-        LOGGER.error(message)
+        logger.error(message)
         raise ValueError(message)
     mask = scores >= config.threshold
     index = arange(len(mask), dtype=int)
     min_i = index[mask][0]
     max_i = index[mask][-1] + 1  # Since Python excludes upper range limit.
-    LOGGER.debug(
+    logger.debug(
         "Cutting %d nucleotides at the beginning and %d at the end.",
         min_i + 1,
         len(seq) - max_i,
