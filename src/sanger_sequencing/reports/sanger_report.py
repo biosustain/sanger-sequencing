@@ -21,10 +21,9 @@ __all__ = ("SangerReport",)
 
 
 import typing
-from tempfile import mkdtemp
+from pathlib import Path
 
 import pydantic
-from pydantic import Schema
 from pydantic.dataclasses import dataclass
 
 from .plasmid_report import PlasmidReport
@@ -41,20 +40,24 @@ class SangerReportConfig:
 
     description = "Configure and collect multiple plasmid reports."
     validate_all = True
+    validate_assignment = True
+    fields = {
+        "threshold": {
+            "description": "Threshold on the Phred quality score used to "
+            "ignore low quality regions at the beginning and end of a sample "
+            "read. The Phred score scales typically between 0 and 62. A good "
+            "Sanger sequencing read has a score of 55."
+        },
+        "output": {"description": "Output directory for alignment files."},
+        "plasmids": {
+            "description": "A collection of individual plasmid reports."
+        },
+    }
 
 
 @dataclass(config=SangerReportConfig)
 class SangerReport:  # noqa: D101
 
-    threshold: pydantic.confloat(ge=0.0, le=62.0) = Schema(
-        default=50.0,
-        description="Threshold on the Phred quality score. The Phred score "
-        "scales typically between 0 and 62. A typical good Sanger sequencing "
-        "read has a score of 55.",
-    )
-    output: pydantic.DirectoryPath = Schema(
-        default=mkdtemp(), description="Output directory for alignment files."
-    )
-    plasmids: typing.List[PlasmidReport] = Schema(
-        default=[], description="A collection of individual plasmid reports."
-    )
+    threshold: pydantic.confloat(ge=0.0, le=62.0) = 50.0
+    output: pydantic.DirectoryPath = Path.cwd()
+    plasmids: typing.List[PlasmidReport] = ()

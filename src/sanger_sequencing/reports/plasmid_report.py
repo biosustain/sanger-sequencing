@@ -22,7 +22,6 @@ __all__ = ("PlasmidReport",)
 
 import typing
 
-from pydantic import Schema
 from pydantic.dataclasses import dataclass
 
 from .sample_report import SampleReport
@@ -39,18 +38,19 @@ class PlasmidReportConfig:
 
     description = "Summarize results for an entire plasmid."
     validate_all = True
+    validate_assignment = True
+    fields = {
+        "id": {"description": "The given identifier for the plasmid."},
+        "name": {"description": "A human readable name for the plasmid."},
+        "samples": {
+            "description": "A collection of individual sample (read) reports."
+        },
+    }
 
 
 @dataclass(config=PlasmidReportConfig)
 class PlasmidReport:  # noqa: D101
 
-    id: str = Schema(
-        default=..., description="The given identifier for the plasmid."
-    )
-    name: str = Schema(
-        default=..., description="A human readable name for the plasmid."
-    )
-    samples: typing.List[SampleReport] = Schema(
-        default=[],
-        description="A collection of individual sample (read) reports.",
-    )
+    id: str
+    name: str
+    samples: typing.List[SampleReport] = ()

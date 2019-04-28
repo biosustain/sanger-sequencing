@@ -23,25 +23,31 @@ can be imported from the ``sanger_sequencing.clients`` subpackage.
 """
 
 import logging
-from typing import Dict, List
+import typing
+from pathlib import Path
 
 from Bio.SeqRecord import SeqRecord
 from pandas import DataFrame
 
 from . import analysis, validation
+from .config import Configuration
 from .helpers import log_errors
+from .reports import PlasmidReport, SampleReport, SangerReport
 
 
-__all__ = ("sanger_verification", "plasmid_report", "sample_report")
+__all__ = ("sanger_report", "plasmid_report", "sample_report")
+
 
 logger = logging.getLogger(__name__)
 
 
-def sanger_verification(
+def sanger_report(
     template: DataFrame,
-    plasmids: Dict[str, SeqRecord],
-    samples: Dict[str, SeqRecord],
-) -> List[Dict]:
+    plasmids: typing.Dict[str, SeqRecord],
+    samples: typing.Dict[str, SeqRecord],
+    threshold: typing.Optional[float] = None,
+    output: typing.Optional[typing.Union[str, Path]] = None,
+) -> SangerReport:
     """
     Perform a complete Sanger verification for many plasmids and sample reads.
 
@@ -54,11 +60,19 @@ def sanger_verification(
         A mapping from plasmid identifiers to sequence records.
     samples : dict
         A mapping from sample identifiers to sequence records.
+    threshold : float, optional
+        Threshold on the Phred quality score used to ignore low quality regions
+        at the beginning and end of a sample read (default 50). The Phred score
+        scales typically between 0 and 62. A good Sanger sequencing read has a
+        score of 55.
+    output : PathLike, optional
+        Output directory for alignment files (default current working
+        directory).
 
     Returns
     -------
-    list
-        A list of dictionaries that are each a plasmid report.
+    sanger_sequencing.reports.SangerReport
+        A collection of plasmid reports.
 
     Raises
     ------
@@ -70,11 +84,21 @@ def sanger_verification(
     plasmid_report
 
     """
+    kwargs = {}
+    if threshold is not None:
+        kwargs["threshold"] = threshold
+    if output is not None:
+        kwargs["output"] = output
+    report = SangerReport(**kwargs)
+    # Initialize global singleton with parameters.
+    Configuration(threshold=report.threshold, output=report.output)
     logger.info("Validate template.")
     errors = validation.validate_template(template)
-    if len(errors) > 0:
+    if errors:
         log_errors(errors)
-        raise AssertionError("Invalid analysis template.")
+        raise AssertionError(
+            "Invalid analysis template. Please see errors above for details."
+        )
     logger.info("Validate plasmids.")
     for plasmid in plasmids.values():
         validation.validate_plasmid(plasmid, [])
@@ -83,20 +107,21 @@ def sanger_verification(
         validation.validate_sample(sample)
     template = validation.drop_missing_records(template, plasmids, samples)
     logger.info("Generate reports.")
-    return [
+    report.plasmids = [
         plasmid_report(plasmid_id, plasmids[plasmid_id], sub, samples)
         for plasmid_id, sub in template.groupby(
             "plasmid", as_index=False, sort=False
         )
     ]
+    return report
 
 
 def plasmid_report(
     plasmid_id: str,
     sequence: SeqRecord,
     template: DataFrame,
-    samples: Dict[str, SeqRecord],
-) -> Dict:
+    samples: typing.Dict[str, SeqRecord],
+) -> PlasmidReport:
     """
     Create an analysis report for a single plasmid and one or more reads.
 
@@ -121,6 +146,7 @@ def plasmid_report(
         An individual plasmid report.
 
     """
+    report = PlasmidReport()
     logger.info("Analyze plasmid '%s'.", plasmid_id)
     report = {
         "id": plasmid_id,
@@ -152,7 +178,7 @@ def sample_report(
     primer_id: str,
     plasmid_id: str,
     plasmid_sequence: SeqRecord,
-) -> Dict:
+) -> SampleReport:
     """
     Create an analysis report for a single sample read.
 
@@ -175,6 +201,7 @@ def sample_report(
         An individual sample report.
 
     """
+    report = SampleReport()
     logger.info("Analyze sample '%s'.", sample_id)
     report = {
         "id": sample_id,
