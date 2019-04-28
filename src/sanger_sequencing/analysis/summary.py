@@ -51,8 +51,10 @@ def concatenate_sample_reports(reports):
 
 def determine_type(row):
     if isnan(row.plasmid_pos) and isnan(row.sample_pos):
-        msg = ("Detected a gap in the alignment. Only expecting single "
-               "position conflicts.")
+        msg = (
+            "Detected a gap in the alignment. Only expecting single "
+            "position conflicts."
+        )
         LOGGER.error(msg)
         raise ValueError(msg)
     elif isnan(row.plasmid_pos):
@@ -73,12 +75,12 @@ def determine_quality(region, threshold):
 def confirm_conflict(conflict_type, row, cover, threshold):
     num_confirmed = 0
     num_invalidated = 0
-    for sample_id, sub in cover.groupby("sample", as_index=False,
-                                        sort=False):
+    for sample_id, sub in cover.groupby("sample", as_index=False, sort=False):
         if determine_quality(sub, threshold) == "low":
             LOGGER.debug(
                 "Ignoring low quality sample region for conflict "
-                "confirmation.")
+                "confirmation."
+            )
             continue
         # Index 1 should correspond to the mid-point and thus to the
         # conflict site. However, due to sequence read trimming we may hit
@@ -86,7 +88,8 @@ def confirm_conflict(conflict_type, row, cover, threshold):
         if len(sub) < 3:
             LOGGER.debug(
                 "Ignoring incomplete sample region (less than three "
-                "positions).")
+                "positions)."
+            )
             continue
         cmp = sub.iloc[1]
         if not cmp.snp:
@@ -97,8 +100,9 @@ def confirm_conflict(conflict_type, row, cover, threshold):
             LOGGER.debug("Different type of conflict site.")
             num_invalidated += 1
             continue
-        if (cmp.sample_chr == row.sample_chr) and \
-                (cmp.plasmid_chr == row.plasmid_chr):
+        if (cmp.sample_chr == row.sample_chr) and (
+            cmp.plasmid_chr == row.plasmid_chr
+        ):
             num_confirmed += 1
         else:
             num_invalidated += 1
@@ -125,8 +129,10 @@ def determine_effects(row, plasmid, previous, following):
     effects = []
     for feat in plasmid.features:
         # Process only features if the conflict position overlaps.
-        if not (previous <= feat.location.end.position and
-                feat.location.start.position <= following):
+        if not (
+            previous <= feat.location.end.position
+            and feat.location.start.position <= following
+        ):
             continue
         features.append((feat.type, feat.qualifiers["label"]))
         if feat.type == "CDS":
@@ -140,13 +146,13 @@ def determine_effects(row, plasmid, previous, following):
             feat_pos = int(row.plasmid_pos) - feat.location.start.position
             feat_pos -= 1  # Transform to 0-indexing.
             codon_pos = feat_pos % 3
-            codon = list(seq[
-                         (feat_pos - codon_pos):(
-                             feat_pos - codon_pos + 3)])
+            codon = list(
+                seq[(feat_pos - codon_pos) : (feat_pos - codon_pos + 3)]
+            )
             if len(codon) < 3:
                 LOGGER.error(
-                    "SNP at the beginning or end of CDS. "
-                    "Unknown effect.")
+                    "SNP at the beginning or end of CDS. " "Unknown effect."
+                )
                 effects.append("Unknown")
                 continue
             cdn = "".join(codon)
@@ -180,9 +186,9 @@ def determine_effects(row, plasmid, previous, following):
     return features, effects
 
 
-def summarize_plasmid_conflicts(sample: DataFrame,
-                                total: DataFrame,
-                                plasmid: SeqRecord) -> List[Dict]:
+def summarize_plasmid_conflicts(
+    sample: DataFrame, total: DataFrame, plasmid: SeqRecord
+) -> List[Dict]:
     """
     Add useful information on sequence conflicts and their surroundings.
 
@@ -217,21 +223,27 @@ def summarize_plasmid_conflicts(sample: DataFrame,
             continue
         # Determine the quality of the region.
         conflict["surroundingQuality"] = determine_quality(
-            region, config.threshold)
+            region, config.threshold
+        )
         # Check for more information on other samples.
         # Due to a potential gap we take the plasmid index position before and
         # check rows in the total in-between that index and index + 2 which
         # should cover the gap.
         index = total[
-            (total["sample"] != row.sample) &
-            (total["plasmid_pos"] == region["plasmid_pos"].min())].index
+            (total["sample"] != row.sample)
+            & (total["plasmid_pos"] == region["plasmid_pos"].min())
+        ].index
         index = [j for i in index for j in range(i, i + 3)]
         cover = total.loc[index, :]
         conflict["confirmed"], conflict["invalidated"] = confirm_conflict(
-            conflict["type"], row, cover, config.threshold)
+            conflict["type"], row, cover, config.threshold
+        )
         # Add feature data.
         conflict["featuresHit"], conflict["effect"] = determine_effects(
-            row, plasmid, region["plasmid_pos"].min(),
-            region["plasmid_pos"].max())
+            row,
+            plasmid,
+            region["plasmid_pos"].min(),
+            region["plasmid_pos"].max(),
+        )
         conflicts.append(conflict)
     return conflicts

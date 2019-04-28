@@ -30,15 +30,18 @@ def client():
         api="https://teapot.com/webservice/v2/",
         token=TOKEN,
         timeout=5,
-        cache_size=1
+        cache_size=1,
     )
 
 
-@pytest.mark.parametrize("key, value", [
-    ("X-LC-APP-Auth", TOKEN),
-    ("Accept", "application/json"),
-    ("Cache-Control", "no-cache")
-])
+@pytest.mark.parametrize(
+    "key, value",
+    [
+        ("X-LC-APP-Auth", TOKEN),
+        ("Accept", "application/json"),
+        ("Cache-Control", "no-cache"),
+    ],
+)
 def test_headers(client, key, value):
     """The LabCollector API requires these headers to be set."""
     assert key in client.headers
@@ -49,7 +52,7 @@ def test_get_plasmid_ids(client, mocker):
     pids = frozenset(range(10))
     get = mocker.patch(
         "sanger_sequencing.clients.LabCollectorClient._get_resource_ids",
-        return_value=pids
+        return_value=pids,
     )
     assert client.get_plasmid_ids() == pids
     get.assert_called_once_with(client.plasmids_resource)
@@ -62,7 +65,7 @@ def test_get_primer_ids(client, mocker):
     pids = frozenset(range(5))
     get = mocker.patch(
         "sanger_sequencing.clients.LabCollectorClient._get_resource_ids",
-        return_value=pids
+        return_value=pids,
     )
     assert client.get_primer_ids() == pids
     get.assert_called_once_with(client.primers_resource)
@@ -76,7 +79,7 @@ def test_get_plasmid_record(client, mocker):
     expected = ("slick", SeqRecord("ATGC"))
     get = mocker.patch(
         "sanger_sequencing.clients.LabCollectorClient._get_sequence_record",
-        return_value=expected
+        return_value=expected,
     )
     result = client.get_plasmid_record(plasmid_id)
     assert result[0] == expected[0]

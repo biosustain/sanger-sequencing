@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-# Copyright (c) 2018 Novo Nordisk Foundation Center for Biosustainability,
+# Copyright (c) 2018-2019 Novo Nordisk Foundation Center for Biosustainability,
 # Technical University of Denmark.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,5 +21,3 @@ __version__ = get_versions()['version']
 del get_versions
 
 from .helpers import show_versions
-from .config import *
-from .api import *

@@ -28,6 +28,13 @@ from pydantic.dataclasses import dataclass
 
 
 class SampleReportConfig:
+    """
+    Configure the `SampleReport` behavior.
+
+    Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
+    details.
+
+    """
 
     description = "Summarize results for a sample read."
     validate_all = True
@@ -47,28 +54,31 @@ class SampleReport:  # noqa: D101
     read_length: pydantic.PositiveInt = Schema(
         default=...,
         alias="readLength",
+        title="Read Length",
         description="The number of nucleotides of this sample read.",
     )
     median_quality: pydantic.confloat(ge=0.0, le=62.0) = Schema(
         default=...,
         alias="medianQuality",
-        description="The median Phred quality of the sample read."
+        title="Median Quality",
+        description="The median Phred quality of the sample read.",
     )
     trim_start: pydantic.PositiveInt = Schema(
         default=0,
         alias="trimStart",
+        title="Trim Start",
         description="The number of nucleotides trimmed at the beginning of the "
         "sequence due to low Phred quality and before alignment.",
     )
     trim_end: pydantic.PositiveInt = Schema(
         default=...,
         alias="trimEnd",
+        title="Trim End",
         description="The number of nucleotides trimmed at the end of the "
         "sequence due to low Phred quality and before alignment.",
     )
     details: pydantic.Any = Schema(
-        default=...,
-        description="A table of conflicts."
+        default=..., description="A table of conflicts."
     )
     errors: typing.List[str] = Schema(
         default=[], description="Errors in aligning the sample read."

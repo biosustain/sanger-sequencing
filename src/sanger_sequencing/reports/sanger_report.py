@@ -31,6 +31,13 @@ from .plasmid_report import PlasmidReport
 
 
 class SangerReportConfig:
+    """
+    Configure the `SangerReport` behavior.
+
+    Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
+    details.
+
+    """
 
     description = "Configure and collect multiple plasmid reports."
     validate_all = True
@@ -41,9 +48,9 @@ class SangerReport:  # noqa: D101
 
     threshold: pydantic.confloat(ge=0.0, le=62.0) = Schema(
         default=50.0,
-        description="Threshold on the Phred quality. The Phred score scales "
-        "between 0 and 62. A typical good Sanger sequencing read has a "
-        "score of 55.",
+        description="Threshold on the Phred quality score. The Phred score "
+        "scales typically between 0 and 62. A typical good Sanger sequencing "
+        "read has a score of 55.",
     )
     output: pydantic.DirectoryPath = Schema(
         default=mkdtemp(), description="Output directory for alignment files."

@@ -37,19 +37,17 @@ __all__ = ("LabCollectorClient",)
 class LabCollectorClient(RepositoryClient):
     """Provide a pythonic interface to the LabCollector API v2."""
 
-    COUNT_PARAMETERS = {
-        "fields": "count"
-    }
-    FIELD_PARAMETERS = {
-        "fields": "Sequence_file_GenBank"
-    }
+    COUNT_PARAMETERS = {"fields": "count"}
+    FIELD_PARAMETERS = {"fields": "Sequence_file_GenBank"}
 
-    def __init__(self,
-                 api: str,
-                 token: str,
-                 timeout: float=10.0,
-                 cache_size: int=10_000,
-                 **kwargs):
+    def __init__(
+        self,
+        api: str,
+        token: str,
+        timeout: float = 10.0,
+        cache_size: int = 10_000,
+        **kwargs,
+    ):
         """
         Initialize a Labcollector API v2 client.
 
@@ -77,9 +75,9 @@ class LabCollectorClient(RepositoryClient):
         self.token = token
         self.timeout = timeout
         self.headers = {
-            'X-LC-APP-Auth': token,
-            'Accept': "application/json",
-            'Cache-Control': "no-cache"
+            "X-LC-APP-Auth": token,
+            "Accept": "application/json",
+            "Cache-Control": "no-cache",
         }
         self.headers.update(kwargs)
         self.plasmids_resource = urljoin(self.api, "plasmids")
@@ -88,13 +86,17 @@ class LabCollectorClient(RepositoryClient):
         # methods.
         self.get_plasmid_ids = lru_cache(maxsize=1)(self.get_plasmid_ids)
         self.get_plasmid_record = lru_cache(maxsize=int(cache_size))(
-            self.get_plasmid_record)
+            self.get_plasmid_record
+        )
         self.get_primer_ids = lru_cache(maxsize=1)(self.get_primer_ids)
 
     def _get_resource_ids(self, endpoint: str) -> FrozenSet:
         response = requests.get(
-            endpoint, headers=self.headers, params=self.COUNT_PARAMETERS,
-            timeout=self.timeout)
+            endpoint,
+            headers=self.headers,
+            params=self.COUNT_PARAMETERS,
+            timeout=self.timeout,
+        )
         response.raise_for_status()
         # The counter seems to be the sequential identifier for objects
         # within the Labcollector database.
@@ -109,19 +111,26 @@ class LabCollectorClient(RepositoryClient):
         """Return a frozenset of all accessible primer identifiers."""
         return self._get_resource_ids(self.primers_resource)
 
-    def _get_sequence_record(self,
-                             endpoint: str,
-                             record_id: str) -> Tuple[str, SeqRecord]:
+    def _get_sequence_record(
+        self, endpoint: str, record_id: str
+    ) -> Tuple[str, SeqRecord]:
         endpoint += f"/{record_id}"
         response = requests.get(
-            endpoint, headers=self.headers, params=self.FIELD_PARAMETERS,
-            timeout=self.timeout)
+            endpoint,
+            headers=self.headers,
+            params=self.FIELD_PARAMETERS,
+            timeout=self.timeout,
+        )
         response.raise_for_status()
         data = response.json()[0]
         name = data["Sequence_file_GenBank"][0]["name"]
         content = data["Sequence_file_GenBank"][0]["content"]
-        return name, SeqIO.read(
-            StringIO(base64.b64decode(content).decode("ascii")), "gb")
+        return (
+            name,
+            SeqIO.read(
+                StringIO(base64.b64decode(content).decode("ascii")), "gb"
+            ),
+        )
 
     def get_plasmid_record(self, plasmid_id: str) -> Tuple[str, SeqRecord]:
         """

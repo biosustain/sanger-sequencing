@@ -36,34 +36,42 @@ __all__ = ("emboss_alignment", "alignment_to_table")
 LOGGER = logging.getLogger(__name__)
 
 
-def alignment_to_table(align: AlignIO.MultipleSeqAlignment,
-                       scores: array,
-                       start: int) -> DataFrame:
+def alignment_to_table(
+    align: AlignIO.MultipleSeqAlignment, scores: array, start: int
+) -> DataFrame:
     """Generate a table of the alignment."""
     report = list()
-    b_coord = align.positions['bseq_start']
-    a_coord = align.positions['aseq_start']
+    b_coord = align.positions["bseq_start"]
+    a_coord = align.positions["aseq_start"]
     for a_char, b_char in zip(align[0], align[1]):
         if a_char == b_char:
             report.append((a_coord, b_coord, False, a_char, b_char))
             a_coord += 1
             b_coord += 1
-        elif b_char == '-':
+        elif b_char == "-":
             report.append((a_coord, nan, True, a_char, b_char))
             a_coord += 1
-        elif a_char == '-':
+        elif a_char == "-":
             report.append((nan, b_coord, True, a_char, b_char))
             b_coord += 1
         else:
             report.append((a_coord, b_coord, True, a_char, b_char))
             a_coord += 1
             b_coord += 1
-    df = DataFrame(report, columns=[
-        'plasmid_pos', 'sample_pos', 'snp', 'plasmid_chr', 'sample_chr'])
+    df = DataFrame(
+        report,
+        columns=[
+            "plasmid_pos",
+            "sample_pos",
+            "snp",
+            "plasmid_chr",
+            "sample_chr",
+        ],
+    )
     # Subtract 1 for Python indexing into scores.
     df["quality"] = (
-        df.loc[df["sample_pos"].notnull(), "sample_pos"].astype(int) - 1).map(
-        scores.__getitem__)
+        df.loc[df["sample_pos"].notnull(), "sample_pos"].astype(int) - 1
+    ).map(scores.__getitem__)
     # Re-align to original sample sequence position.
     df.loc[df["sample_pos"].notnull(), "sample_pos"] += start
     return df
@@ -71,25 +79,26 @@ def alignment_to_table(align: AlignIO.MultipleSeqAlignment,
 
 def extract_emboss_positions(lines: List[str]):
     """Extract the alignment positions from the `water` output file."""
-    asis_lines = [l.strip() for l in lines if l.startswith('asis')]
-    start_pattern = re.compile(r'^asis\s+(\d+)')
-    end_pattern = re.compile(r'(\d+)$')
+    asis_lines = [l.strip() for l in lines if l.startswith("asis")]
+    start_pattern = re.compile(r"^asis\s+(\d+)")
+    end_pattern = re.compile(r"(\d+)$")
     return {
-        'aseq_start': int(start_pattern.match(asis_lines[0])[1]),
-        'bseq_start': int(start_pattern.match(asis_lines[1])[1]),
-        'aseq_end': int(end_pattern.search(asis_lines[-2])[1]),
-        'bseq_end': int(end_pattern.search(asis_lines[-1])[1])
+        "aseq_start": int(start_pattern.match(asis_lines[0])[1]),
+        "bseq_start": int(start_pattern.match(asis_lines[1])[1]),
+        "aseq_end": int(end_pattern.search(asis_lines[-2])[1]),
+        "bseq_end": int(end_pattern.search(asis_lines[-1])[1]),
     }
 
 
-def emboss_alignment(sample_id: str,
-                     sample_sequence: SeqRecord,
-                     plasmid_id: str,
-                     plasmid_sequence: SeqRecord,
-                     gap_open_penalty: float=2.0,
-                     gap_extension_penalty: float=10.0,
-                     tool: get_type_hints(WaterCommandline)=WaterCommandline
-                     ) -> AlignIO.MultipleSeqAlignment:
+def emboss_alignment(
+    sample_id: str,
+    sample_sequence: SeqRecord,
+    plasmid_id: str,
+    plasmid_sequence: SeqRecord,
+    gap_open_penalty: float = 2.0,
+    gap_extension_penalty: float = 10.0,
+    tool: get_type_hints(WaterCommandline) = WaterCommandline,
+) -> AlignIO.MultipleSeqAlignment:
     """
     Create an alignment between the known plasmid sequence and the Sanger read.
 
@@ -126,19 +135,18 @@ def emboss_alignment(sample_id: str,
 
     align = AlignIO.read(cmd.outfile, "emboss")
     # Get coordinates manually because biopython ...
-    identity = align.annotations['identity'] / len(sample_sequence)
+    identity = align.annotations["identity"] / len(sample_sequence)
     LOGGER.debug("Sequence identity is %0.2g.", identity)
     if identity < 0.9:
         LOGGER.info("Trying reverse complement!")
         cmd.bsequence = f"asis:{sample_sequence.reverse_complement().seq}"
-        rev_outfile = join(
-            config.output, "{sample_id}_{plasmid_id}_rev.txt")
+        rev_outfile = join(config.output, "{sample_id}_{plasmid_id}_rev.txt")
         cmd.outfile = rev_outfile
         stdout, stderr = cmd()
         LOGGER.debug(stdout)
         LOGGER.debug(stderr)
         rev_align = AlignIO.read(cmd.outfile, "emboss")
-        rev_identity = rev_align.annotations['identity'] / len(sample_sequence)
+        rev_identity = rev_align.annotations["identity"] / len(sample_sequence)
         LOGGER.debug("Complement sequence identity is %0.2g.", rev_identity)
     else:
         rev_identity = -1.0

@@ -34,19 +34,28 @@ def trim_sample(seq: SeqRecord) -> (int, SeqRecord, array, int, float):
     """Cut off low quality ends of a Sanger sequencing record."""
     LOGGER.debug("Trim sample.")
     config = Configuration()
-    scores = asarray(seq.letter_annotations['phred_quality'])
+    scores = asarray(seq.letter_annotations["phred_quality"])
     median = float(nanmedian(scores))
     if median < config.threshold:
         message = (
             f"The median Phred quality ({median}) is below the "
-            f"required threshold ({config.threshold}).")
+            f"required threshold ({config.threshold})."
+        )
         LOGGER.error(message)
         raise ValueError(message)
-    mask = (scores >= config.threshold)
+    mask = scores >= config.threshold
     index = arange(len(mask), dtype=int)
     min_i = index[mask][0]
     max_i = index[mask][-1] + 1  # Since Python excludes upper range limit.
-    LOGGER.debug("Cutting %d nucleotides at the beginning and %d at the end.",
-                 min_i + 1, len(seq) - max_i)
+    LOGGER.debug(
+        "Cutting %d nucleotides at the beginning and %d at the end.",
+        min_i + 1,
+        len(seq) - max_i,
+    )
     return (
-        min_i, seq[min_i:max_i], scores[min_i:max_i], len(seq) - max_i, median)
+        min_i,
+        seq[min_i:max_i],
+        scores[min_i:max_i],
+        len(seq) - max_i,
+        median,
+    )

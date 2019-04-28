@@ -37,10 +37,11 @@ __all__ = ("sanger_verification", "plasmid_report", "sample_report")
 LOGGER = logging.getLogger(__name__)
 
 
-def sanger_verification(template: DataFrame,
-                        plasmids: Dict[str, SeqRecord],
-                        samples: Dict[str, SeqRecord]
-                        ) -> List[Dict]:
+def sanger_verification(
+    template: DataFrame,
+    plasmids: Dict[str, SeqRecord],
+    samples: Dict[str, SeqRecord],
+) -> List[Dict]:
     """
     Perform a complete Sanger verification for many plasmids and sample reads.
 
@@ -82,15 +83,20 @@ def sanger_verification(template: DataFrame,
         validation.validate_sample(sample)
     template = validation.drop_missing_records(template, plasmids, samples)
     LOGGER.info("Generate reports.")
-    return [plasmid_report(plasmid_id, plasmids[plasmid_id], sub, samples)
-            for plasmid_id, sub in template.groupby(
-            "plasmid", as_index=False, sort=False)]
+    return [
+        plasmid_report(plasmid_id, plasmids[plasmid_id], sub, samples)
+        for plasmid_id, sub in template.groupby(
+            "plasmid", as_index=False, sort=False
+        )
+    ]
 
 
-def plasmid_report(plasmid_id: str,
-                   sequence: SeqRecord,
-                   template: DataFrame,
-                   samples: Dict[str, SeqRecord]) -> Dict:
+def plasmid_report(
+    plasmid_id: str,
+    sequence: SeqRecord,
+    template: DataFrame,
+    samples: Dict[str, SeqRecord],
+) -> Dict:
     """
     Create an analysis report for a single plasmid and one or more reads.
 
@@ -120,24 +126,33 @@ def plasmid_report(plasmid_id: str,
         "id": plasmid_id,
         "name": sequence.name,
         "samples": [
-            sample_report(row.sample, samples[row.sample], row.primer,
-                          plasmid_id, sequence)
-            for row in template.itertuples(index=False)]
+            sample_report(
+                row.sample,
+                samples[row.sample],
+                row.primer,
+                plasmid_id,
+                sequence,
+            )
+            for row in template.itertuples(index=False)
+        ],
     }
     # Post-process reports in order to classify conflicts.
     LOGGER.debug("Concatenate the detailed sample reports.")
     total = analysis.concatenate_sample_reports(report["samples"])
     for rep in report["samples"]:
         rep["conflicts"] = analysis.summarize_plasmid_conflicts(
-            rep["details"], total, sequence)
+            rep["details"], total, sequence
+        )
     return report
 
 
-def sample_report(sample_id: str,
-                  sample_sequence: SeqRecord,
-                  primer_id: str,
-                  plasmid_id: str,
-                  plasmid_sequence: SeqRecord) -> Dict:
+def sample_report(
+    sample_id: str,
+    sample_sequence: SeqRecord,
+    primer_id: str,
+    plasmid_id: str,
+    plasmid_sequence: SeqRecord,
+) -> Dict:
     """
     Create an analysis report for a single sample read.
 
@@ -165,12 +180,13 @@ def sample_report(sample_id: str,
         "id": sample_id,
         "primer": primer_id,
         "readLength": len(sample_sequence),
-        "errors": []
+        "errors": [],
     }
     # Convert to base `float` for JSON compatibility.
     try:
         start, trimmed_seq, quality_scores, end, median = analysis.trim_sample(
-            sample_sequence)
+            sample_sequence
+        )
     except ValueError as err:
         report["errors"].append(str(err))
         return report
@@ -178,7 +194,9 @@ def sample_report(sample_id: str,
     report["cutBeginning"] = int(start)
     report["cutEnd"] = int(end)
     align = analysis.emboss_alignment(
-        sample_id, trimmed_seq, plasmid_id, plasmid_sequence)
+        sample_id, trimmed_seq, plasmid_id, plasmid_sequence
+    )
     report["details"] = analysis.alignment_to_table(
-        align, quality_scores, start)
+        align, quality_scores, start
+    )
     return report

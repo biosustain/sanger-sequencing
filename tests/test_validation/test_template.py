@@ -27,8 +27,9 @@ import sanger_sequencing.validation as validation
 
 @pytest.fixture(scope="module")
 def template():
-    return read_csv(StringIO(
-        """
+    return read_csv(
+        StringIO(
+            """
         plasmid,primer,sample
         gfp,47,abcd
         gfp,47,efgh
@@ -39,7 +40,9 @@ def template():
         rfp,k,3
         rfp,l,4
         """
-    ), skipinitialspace=True)
+        ),
+        skipinitialspace=True,
+    )
 
 
 def test_validate_template(template):
@@ -54,20 +57,23 @@ def test_validate_empty_template():
     assert errors[0]["message"] == "There must be at least one data row."
 
 
-@pytest.mark.parametrize("plasmids, samples, indeces", [
-    ({"gfp": None},
-     {"abcd": None, "efgh": None, "1": None, "2": None},
-     [0, 1, 2, 3]),
-    ({"rfp": None},
-     {"xyz": None, "uvw": None, "3": None, "4": None},
-     [4, 5, 6, 7]),
-    ({"gfp": None},
-     {"1": None, "2": None},
-     [2, 3]),
-    ({"rfp": None},
-     {"xyz": None, "uvw": None},
-     [4, 5])
-])
+@pytest.mark.parametrize(
+    "plasmids, samples, indeces",
+    [
+        (
+            {"gfp": None},
+            {"abcd": None, "efgh": None, "1": None, "2": None},
+            [0, 1, 2, 3],
+        ),
+        (
+            {"rfp": None},
+            {"xyz": None, "uvw": None, "3": None, "4": None},
+            [4, 5, 6, 7],
+        ),
+        ({"gfp": None}, {"1": None, "2": None}, [2, 3]),
+        ({"rfp": None}, {"xyz": None, "uvw": None}, [4, 5]),
+    ],
+)
 def test_drop_missing_records(template, plasmids, samples, indeces):
     reduced = validation.drop_missing_records(template, plasmids, samples)
     assert (reduced.index == indeces).all()

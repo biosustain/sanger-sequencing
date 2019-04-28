@@ -29,6 +29,13 @@ from .sample_report import SampleReport
 
 
 class PlasmidReportConfig:
+    """
+    Configure the `PlasmidReport` behavior.
+
+    Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
+    details.
+
+    """
 
     description = "Summarize results for an entire plasmid."
     validate_all = True
