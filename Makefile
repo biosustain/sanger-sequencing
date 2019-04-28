@@ -15,6 +15,10 @@ clean-pyc:
 	find . -type f -name '*.py[co]' -delete
 	find . -type d -name '__pycache__' -delete
 
+qa:
+	isort --recursive src/sanger_sequencing tests
+	black src/sanger_sequencing tests
+
 ## Generate Sphinx HTML documentation
 docs:
 	rm -f docs/sanger-sequencing.rst docs/modules.rst
@@ -24,4 +28,4 @@ docs:
 
 release: clean
 	python setup.py sdist bdist_wheel
-	twine upload dist/*
+	twine upload --skip-existing dist/*
