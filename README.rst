@@ -3,36 +3,46 @@ Sanger Sequence Analysis
 ========================
 
 .. image:: https://img.shields.io/pypi/v/sanger-sequencing.svg
-        :target: https://pypi.python.org/pypi/sanger-sequencing
+   :target: https://pypi.org/project/sanger-sequencing/
+   :alt: Current PyPI Version
 
-.. image:: https://img.shields.io/travis/biosustain/sanger-sequencing.svg
-        :target: https://travis-ci.org/biosustain/sanger-sequencing
+.. image:: https://img.shields.io/pypi/pyversions/sanger-sequencing.svg
+   :target: https://pypi.org/project/sanger-sequencing/
+   :alt: Supported Python Versions
 
-.. image:: https://readthedocs.org/projects/sanger-sequencing/badge/?version=latest
-        :target: https://sanger-sequencing.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+.. image:: https://img.shields.io/pypi/l/sanger-sequencing.svg
+   :target: https://www.apache.org/licenses/LICENSE-2.0
+   :alt: Apache Software License Version 2.0
 
-.. image:: https://pyup.io/repos/github/biosustain/sanger-sequencing/shield.svg
-     :target: https://pyup.io/repos/github/biosustain/sanger-sequencing/
-     :alt: Updates
+.. image:: https://img.shields.io/travis/biosustain/sanger-sequencing/master.svg?label=Travis%20CI
+   :target: https://travis-ci.org/biosustain/sanger-sequencing
+   :alt: Travis CI
+
+.. image:: https://codecov.io/gh/biosustain/sanger-sequencing/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/biosustain/sanger-sequencing
+   :alt: Codecov
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/ambv/black
+   :alt: Black
 
 .. summary-start
 
 Semi-automated Sanger sequence analysis for plasmid verification.
 
-This package is the result of an internal hackathon at the Novo Nordisk 
-Foundation Center for Biosustainability and represents our approach to 
-improving the workflow of geneticists who need to verify plasmid 
-constructs by Sanger sequencing.
+This package is the result of an internal hackathon at the Novo Nordisk
+Foundation Center for Biosustainability and represents our approach to improving
+the workflow of geneticists who need to verify plasmid constructs by Sanger
+sequencing.
 
 Getting Started
 ===============
 
-From a Python environment that has Python 3.6 or later installed you can easily 
+From a Python environment that has Python 3.7 or later installed you can easily
 
 .. code-block:: console
 
-    $ pip install sanger-sequencing
+    $ pip install sanger-sequencing[analysis]
 
 or use ``pip3`` depending on your environment.
 
@@ -43,18 +53,18 @@ values and a high level analysis interface.
 .. code-block:: python
 
     import sanger_sequencing
-    
+
     config = sanger_sequencing.Configuration()
     print(config.threshold)
     print(config.output)
-    
-You can read more about the meaning of those attributes in the configuration 
-documentation. The main entry point for doing any kind of analysis is the 
-``sanger_verification`` function. This function requires three arguments: a 
-template table of what to analyze, a mapping from plasmid identifiers to 
-their sequence records (typically coming from Genbank files), and a mapping 
-from sample identifiers to sequence records (``.ab1`` files).
-    
+
+You can read more about the meaning of those attributes in the configuration
+documentation. The main entry point for doing any kind of analysis is the
+``sanger_verification`` function. This function requires three arguments: a
+template table of what to analyze, a mapping from plasmid identifiers to their
+sequence records (typically coming from Genbank files), and a mapping from
+sample identifiers to sequence records (``.ab1`` files).
+
 .. summary-end
 
 You can find the complete documentation at: https://sanger-sequencing.readthedocs.io.
@@ -62,15 +72,7 @@ You can find the complete documentation at: https://sanger-sequencing.readthedoc
 Copyright
 =========
 
-* Copyright (c) 2018 Novo Nordisk Foundation Center for Biosustainability, Technical University Denmark licensed
-  under the Apache License, Version 2.0
-
-Credits
-=======
-
-This package was created using cookiecutter_ and the 
-`DD-DeCaF/cookiecutter-decaf-python`_ project template.
-
-.. _cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`DD-DeCaF/cookiecutter-decaf-python`: https://github.com/DD-DeCaF/cookiecutter-decaf-python
-
+* Copyright © 2018-2019, Novo Nordisk Foundation Center for Biosustainability,
+  Technical University of Denmark
+* Free software distributed under the `Apache Software License 2.0
+  <https://www.apache.org/licenses/LICENSE-2.0>`_.

@@ -1,4 +1,4 @@
-### Problem description
+#### Problem description
 
 Please explain:
 * **what** you tried to achieve,
@@ -6,7 +6,7 @@ Please explain:
 * **why** the current behaviour is a problem and what output
   you expected instead.
 
-### Code Sample
+#### Code Sample
 
 Create a [minimal, complete, verifiable example
 ](https://stackoverflow.com/help/mcve).
@@ -15,15 +15,19 @@ Create a [minimal, complete, verifiable example
 # Paste your code here or link to a gist.
 ```
 
-```bash
+```
 # If there was a crash, please include the traceback here.
 ```
 
 ### Context
 
-<details>
+Please run the following code and paste the output inside the details
+block.
 
-Please paste the output of `python -c "from sanger_sequencing 
-import show_versions;show_versions()"` here.
+```
+python -c "import sanger_sequencing;sanger_sequencing.show_versions()"
+```
+
+<details>
 
 </details>
