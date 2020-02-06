@@ -144,24 +144,23 @@ def plasmid_report(
         An individual plasmid report.
 
     """
-    report = PlasmidReport()
     logger.info("Analyze plasmid '%s'.", plasmid_id)
-    report = {
-        "id": plasmid_id,
-        "name": sequence.name,
-        "samples": [
+    report = PlasmidReport(
+        id=plasmid_id,
+        name=sequence.name,
+        samples=[
             sample_report(
                 row.sample, samples[row.sample], row.primer, plasmid_id, sequence,
             )
             for row in template.itertuples(index=False)
         ],
-    }
+    )
     # Post-process reports in order to classify conflicts.
     logger.debug("Concatenate the detailed sample reports.")
-    total = analysis.concatenate_sample_reports(report["samples"])
-    for rep in report["samples"]:
-        rep["conflicts"] = analysis.summarize_plasmid_conflicts(
-            rep["details"], total, sequence
+    total = analysis.concatenate_sample_reports(report.samples)
+    for rep in report.samples:
+        rep.conflicts = analysis.summarize_plasmid_conflicts(
+            rep.details, total, sequence
         )
     return report
 
@@ -195,27 +194,23 @@ def sample_report(
         An individual sample report.
 
     """
-    report = SampleReport()
     logger.info("Analyze sample '%s'.", sample_id)
-    report = {
-        "id": sample_id,
-        "primer": primer_id,
-        "readLength": len(sample_sequence),
-        "errors": [],
-    }
+    report = SampleReport(
+        id=sample_id, primer=primer_id, readLength=len(sample_sequence),
+    )
     # Convert to base `float` for JSON compatibility.
     try:
         start, trimmed_seq, quality_scores, end, median = analysis.trim_sample(
             sample_sequence
         )
     except ValueError as err:
-        report["errors"].append(str(err))
+        report.errors.append(str(err))
         return report
-    report["medianQuality"] = median
-    report["cutBeginning"] = int(start)
-    report["cutEnd"] = int(end)
+    report.median_quality = median
+    report.trim_start = int(start)
+    report.trim_end = int(end)
     align = analysis.emboss_alignment(
         sample_id, trimmed_seq, plasmid_id, plasmid_sequence
     )
-    report["details"] = analysis.alignment_to_table(align, quality_scores, start)
+    report.details = analysis.alignment_to_table(align, quality_scores, start)
     return report

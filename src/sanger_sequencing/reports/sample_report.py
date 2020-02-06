@@ -23,6 +23,7 @@ __all__ = ("SampleReport",)
 import typing
 
 import pydantic
+from pandas import DataFrame
 from pydantic import BaseModel, Field
 
 
@@ -39,27 +40,32 @@ class SampleReport(BaseModel):  # noqa: D101
         title="Read Length",
         description="The number of nucleotides of this sample read.",
     )
-    median_quality: pydantic.confloat(ge=0.0, le=62.0) = Field(
-        ...,
+    median_quality: typing.Optional[pydantic.confloat(ge=0.0, le=62.0)] = Field(
+        None,
         alias="medianQuality",
         title="Median Quality",
         description="The median Phred quality of the sample read.",
     )
-    trim_start: pydantic.conint(ge=0) = Field(
-        ...,
+    trim_start: typing.Optional[pydantic.conint(ge=0)] = Field(
+        None,
         alias="trimStart",
         title="Trim Start",
         description="The number of nucleotides trimmed at the beginning of the "
-                    "sequence due to low Phred quality and before alignment.",
+        "sequence due to low Phred quality and before alignment.",
     )
-    trim_end: pydantic.conint(ge=0) = Field(
-        ...,
+    trim_end: typing.Optional[pydantic.conint(ge=0)] = Field(
+        None,
         alias="trimEnd",
         title="Trim End",
         description="The number of nucleotides trimmed at the end of the sequence due "
-                    "to low Phred quality and before alignment.",
+        "to low Phred quality and before alignment.",
     )
-    details: typing.Any = Field(..., description="A table of conflicts.")
+    details: typing.Optional[DataFrame] = Field(
+        None, description="A table of conflicts."
+    )
+    conflicts: typing.Optional[typing.List[dict]] = Field(
+        (), description="A summary of the conflicts detected in this sample read."
+    )
     errors: typing.List[str] = Field(
         (), description="Errors in aligning the sample read."
     )
@@ -76,3 +82,5 @@ class SampleReport(BaseModel):  # noqa: D101
         description = "Summarize results for a sample read."
         validate_all = True
         validate_assignment = True
+        # Allow the details field to be a pandas data frame.
+        arbitrary_types_allowed = True

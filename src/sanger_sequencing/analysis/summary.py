@@ -26,6 +26,7 @@ from numpy import isnan, nanmean
 from pandas import DataFrame, concat
 
 from ..config import Configuration
+from ..reports import SampleReport
 
 
 __all__ = ("summarize_plasmid_conflicts", "concatenate_sample_reports")
@@ -36,17 +37,22 @@ START_CODONS = frozenset(ambiguous_dna_by_name["Standard"].start_codons)
 STOP_CODONS = frozenset(ambiguous_dna_by_name["Standard"].stop_codons)
 
 
-def concatenate_sample_reports(reports):
+def concatenate_sample_reports(reports: List[SampleReport]) -> DataFrame:
     """Concatenate many data frames into one."""
     data = []
     for sample in reports:
-        df = sample.get("details")
+        df = sample.details
         if df is None:
             continue
-        df["sample"] = sample["id"]
-        df["primer"] = sample["primer"]
+        df["sample"] = sample.id
+        df["primer"] = sample.primer
         data.append(df)
-    return concat(data, ignore_index=True, copy=False)
+    if len(data) == 0:
+        return DataFrame(
+            columns=["plasmid_pos", "sample_pos", "snp", "plasmid_chr", "sample_chr",]
+        )
+    else:
+        return concat(data, ignore_index=True, copy=False)
 
 
 def determine_type(row):
@@ -130,7 +136,7 @@ def determine_effects(row, plasmid, previous, following):
             and feat.location.start.position <= following
         ):
             continue
-        features.append((feat.type, feat.qualifiers["label"]))
+        features.append((feat.type, feat.qualifiers.get("label", "")))
         if feat.type == "CDS":
             # Potential frame shift (usually rather a sequencing error).
             if isnan(row.plasmid_pos) or isnan(row.sample_pos):
@@ -197,6 +203,8 @@ def summarize_plasmid_conflicts(
     """
     config = Configuration()
     conflicts = []
+    if sample is None:
+        return conflicts
     # Show what happens around a mismatch location on all samples.
     logger.info("Assessing %d conflicts.", total["snp"].sum())
     for row in sample.loc[sample["snp"], :].itertuples():
