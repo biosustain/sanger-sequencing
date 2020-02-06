@@ -60,13 +60,7 @@ def alignment_to_table(
             b_coord += 1
     df = DataFrame(
         report,
-        columns=[
-            "plasmid_pos",
-            "sample_pos",
-            "snp",
-            "plasmid_chr",
-            "sample_chr",
-        ],
+        columns=["plasmid_pos", "sample_pos", "snp", "plasmid_chr", "sample_chr",],
     )
     # Subtract 1 for Python indexing into scores.
     df["quality"] = (

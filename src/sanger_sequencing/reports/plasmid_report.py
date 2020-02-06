@@ -42,9 +42,7 @@ class PlasmidReportConfig:
     fields = {
         "id": {"description": "The given identifier for the plasmid."},
         "name": {"description": "A human readable name for the plasmid."},
-        "samples": {
-            "description": "A collection of individual sample (read) reports."
-        },
+        "samples": {"description": "A collection of individual sample (read) reports."},
     }
 
 

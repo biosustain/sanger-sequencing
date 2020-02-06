@@ -27,10 +27,7 @@ TOKEN = "ABCDEFG"
 @pytest.fixture(scope="module")
 def client():
     return LabCollectorClient(
-        api="https://teapot.com/webservice/v2/",
-        token=TOKEN,
-        timeout=5,
-        cache_size=1,
+        api="https://teapot.com/webservice/v2/", token=TOKEN, timeout=5, cache_size=1,
     )
 
 

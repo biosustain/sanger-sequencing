@@ -49,9 +49,7 @@ class SangerReportConfig:
             "Sanger sequencing read has a score of 55."
         },
         "output": {"description": "Output directory for alignment files."},
-        "plasmids": {
-            "description": "A collection of individual plasmid reports."
-        },
+        "plasmids": {"description": "A collection of individual plasmid reports."},
     }
 
 

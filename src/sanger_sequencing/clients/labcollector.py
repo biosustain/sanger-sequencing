@@ -127,9 +127,7 @@ class LabCollectorClient(RepositoryClient):
         content = data["Sequence_file_GenBank"][0]["content"]
         return (
             name,
-            SeqIO.read(
-                StringIO(base64.b64decode(content).decode("ascii")), "gb"
-            ),
+            SeqIO.read(StringIO(base64.b64decode(content).decode("ascii")), "gb"),
         )
 
     def get_plasmid_record(self, plasmid_id: str) -> Tuple[str, SeqRecord]:

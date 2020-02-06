@@ -13,11 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__author__ = 'Novo Nordisk Foundation Center for Biosustainability, ' \
-             'Technical University Denmark'
-__email__ = 'morbeb@biosustain.dtu.dk'
+__author__ = (
+    "Novo Nordisk Foundation Center for Biosustainability, "
+    "Technical University Denmark"
+)
+__email__ = "morbeb@biosustain.dtu.dk"
 from ._version import get_versions
-__version__ = get_versions()['version']
+
+__version__ = get_versions()["version"]
 del get_versions
 
 from .helpers import show_versions

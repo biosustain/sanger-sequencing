@@ -109,9 +109,7 @@ def sanger_report(
     logger.info("Generate reports.")
     report.plasmids = [
         plasmid_report(plasmid_id, plasmids[plasmid_id], sub, samples)
-        for plasmid_id, sub in template.groupby(
-            "plasmid", as_index=False, sort=False
-        )
+        for plasmid_id, sub in template.groupby("plasmid", as_index=False, sort=False)
     ]
     return report
 
@@ -153,11 +151,7 @@ def plasmid_report(
         "name": sequence.name,
         "samples": [
             sample_report(
-                row.sample,
-                samples[row.sample],
-                row.primer,
-                plasmid_id,
-                sequence,
+                row.sample, samples[row.sample], row.primer, plasmid_id, sequence,
             )
             for row in template.itertuples(index=False)
         ],
@@ -223,7 +217,5 @@ def sample_report(
     align = analysis.emboss_alignment(
         sample_id, trimmed_seq, plasmid_id, plasmid_sequence
     )
-    report["details"] = analysis.alignment_to_table(
-        align, quality_scores, start
-    )
+    report["details"] = analysis.alignment_to_table(align, quality_scores, start)
     return report

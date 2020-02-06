@@ -78,8 +78,7 @@ def confirm_conflict(conflict_type, row, cover, threshold):
     for sample_id, sub in cover.groupby("sample", as_index=False, sort=False):
         if determine_quality(sub, threshold) == "low":
             logger.debug(
-                "Ignoring low quality sample region for conflict "
-                "confirmation."
+                "Ignoring low quality sample region for conflict " "confirmation."
             )
             continue
         # Index 1 should correspond to the mid-point and thus to the
@@ -87,8 +86,7 @@ def confirm_conflict(conflict_type, row, cover, threshold):
         # the end of the sequence alignment.
         if len(sub) < 3:
             logger.debug(
-                "Ignoring incomplete sample region (less than three "
-                "positions)."
+                "Ignoring incomplete sample region (less than three " "positions)."
             )
             continue
         cmp = sub.iloc[1]
@@ -100,9 +98,7 @@ def confirm_conflict(conflict_type, row, cover, threshold):
             logger.debug("Different type of conflict site.")
             num_invalidated += 1
             continue
-        if (cmp.sample_chr == row.sample_chr) and (
-            cmp.plasmid_chr == row.plasmid_chr
-        ):
+        if (cmp.sample_chr == row.sample_chr) and (cmp.plasmid_chr == row.plasmid_chr):
             num_confirmed += 1
         else:
             num_invalidated += 1
@@ -146,13 +142,9 @@ def determine_effects(row, plasmid, previous, following):
             feat_pos = int(row.plasmid_pos) - feat.location.start.position
             feat_pos -= 1  # Transform to 0-indexing.
             codon_pos = feat_pos % 3
-            codon = list(
-                seq[(feat_pos - codon_pos) : (feat_pos - codon_pos + 3)]
-            )
+            codon = list(seq[(feat_pos - codon_pos) : (feat_pos - codon_pos + 3)])
             if len(codon) < 3:
-                logger.error(
-                    "SNP at the beginning or end of CDS. " "Unknown effect."
-                )
+                logger.error("SNP at the beginning or end of CDS. " "Unknown effect.")
                 effects.append("Unknown")
                 continue
             cdn = "".join(codon)
@@ -222,9 +214,7 @@ def summarize_plasmid_conflicts(
         except ValueError:
             continue
         # Determine the quality of the region.
-        conflict["surroundingQuality"] = determine_quality(
-            region, config.threshold
-        )
+        conflict["surroundingQuality"] = determine_quality(region, config.threshold)
         # Check for more information on other samples.
         # Due to a potential gap we take the plasmid index position before and
         # check rows in the total in-between that index and index + 2 which
@@ -240,10 +230,7 @@ def summarize_plasmid_conflicts(
         )
         # Add feature data.
         conflict["featuresHit"], conflict["effect"] = determine_effects(
-            row,
-            plasmid,
-            region["plasmid_pos"].min(),
-            region["plasmid_pos"].max(),
+            row, plasmid, region["plasmid_pos"].min(), region["plasmid_pos"].max(),
         )
         conflicts.append(conflict)
     return conflicts

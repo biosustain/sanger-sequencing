@@ -60,9 +60,7 @@ def validate_template(template: DataFrame) -> List[Dict]:
 
     """
     if len(template) == 0:
-        return [
-            {"code": "empty", "message": "There must be at least one data row."}
-        ]
+        return [{"code": "empty", "message": "There must be at least one data row."}]
     # Convert the data frame into a format suitable for goodtables, the keys
     # of the first record are taken as the column headers.
     records = template.to_dict("records")
@@ -77,9 +75,7 @@ def validate_template(template: DataFrame) -> List[Dict]:
 
 
 def drop_missing_records(
-    template: DataFrame,
-    plasmids: Dict[str, SeqRecord],
-    samples: Dict[str, SeqRecord],
+    template: DataFrame, plasmids: Dict[str, SeqRecord], samples: Dict[str, SeqRecord],
 ) -> DataFrame:
     """
     Drop rows with missing sequence records from the template.
@@ -105,15 +101,13 @@ def drop_missing_records(
     plasmid_mask = template["plasmid"].isin(plasmids)
     if (~plasmid_mask).any():
         logger.error(
-            "The following plasmid(s) have no corresponding sequence record: "
-            "%s.",
+            "The following plasmid(s) have no corresponding sequence record: " "%s.",
             ", ".join(template.loc[plasmid_mask, "plasmid"]),
         )
     sample_mask = template["sample"].isin(samples)
     if (~sample_mask).any():
         logger.error(
-            "The following sample(s) have no corresponding sequence record: "
-            "%s.",
+            "The following sample(s) have no corresponding sequence record: " "%s.",
             ", ".join(template.loc[sample_mask, "sample"]),
         )
     return template.loc[plasmid_mask & sample_mask, :]
