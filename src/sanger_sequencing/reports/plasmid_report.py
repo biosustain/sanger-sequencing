@@ -22,33 +22,28 @@ __all__ = ("PlasmidReport",)
 
 import typing
 
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel, Field
 
 from .sample_report import SampleReport
 
 
-class PlasmidReportConfig:
-    """
-    Configure the `PlasmidReport` behavior.
+class PlasmidReport(BaseModel):  # noqa: D101
 
-    Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
-    details.
+    id: str = Field(..., description="The given identifier for the plasmid.")
+    name: str = Field(..., description="A human readable name for the plasmid.")
+    samples: typing.List[SampleReport] = Field(
+        (), description="A collection of individual sample (read) reports."
+    )
 
-    """
+    class Config:
+        """
+        Configure the `PlasmidReport` behavior.
 
-    description = "Summarize results for an entire plasmid."
-    validate_all = True
-    validate_assignment = True
-    fields = {
-        "id": {"description": "The given identifier for the plasmid."},
-        "name": {"description": "A human readable name for the plasmid."},
-        "samples": {"description": "A collection of individual sample (read) reports."},
-    }
+        Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
+        details.
 
+        """
 
-@dataclass(config=PlasmidReportConfig)
-class PlasmidReport:  # noqa: D101
-
-    id: str
-    name: str
-    samples: typing.List[SampleReport] = ()
+        description = "Summarize results for an entire plasmid."
+        validate_all = True
+        validate_assignment = True

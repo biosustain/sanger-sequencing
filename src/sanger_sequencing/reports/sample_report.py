@@ -23,62 +23,56 @@ __all__ = ("SampleReport",)
 import typing
 
 import pydantic
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel, Field
 
 
-class SampleReportConfig:
-    """
-    Configure the `SampleReport` behavior.
+class SampleReport(BaseModel):  # noqa: D101
 
-    Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
-    details.
+    id: str = Field(..., description="The given identifier for the sample.")
+    primer: str = Field(
+        ...,
+        description="The primer identifier or name that was used for this sample read.",
+    )
+    read_length: pydantic.PositiveInt = Field(
+        ...,
+        alias="readLength",
+        title="Read Length",
+        description="The number of nucleotides of this sample read.",
+    )
+    median_quality: pydantic.confloat(ge=0.0, le=62.0) = Field(
+        ...,
+        alias="medianQuality",
+        title="Median Quality",
+        description="The median Phred quality of the sample read.",
+    )
+    trim_start: pydantic.conint(ge=0) = Field(
+        ...,
+        alias="trimStart",
+        title="Trim Start",
+        description="The number of nucleotides trimmed at the beginning of the "
+                    "sequence due to low Phred quality and before alignment.",
+    )
+    trim_end: pydantic.conint(ge=0) = Field(
+        ...,
+        alias="trimEnd",
+        title="Trim End",
+        description="The number of nucleotides trimmed at the end of the sequence due "
+                    "to low Phred quality and before alignment.",
+    )
+    details: typing.Any = Field(..., description="A table of conflicts.")
+    errors: typing.List[str] = Field(
+        (), description="Errors in aligning the sample read."
+    )
 
-    """
+    class Config:
+        """
+        Configure the `SampleReport` behavior.
 
-    description = "Summarize results for a sample read."
-    validate_all = True
-    validate_assignment = True
-    fields = {
-        "id": {"description": "The given identifier for the sample."},
-        "primer": {
-            "description": "The primer identifier or name that was used for "
-            "this sample read."
-        },
-        "read_length": {
-            "alias": "readLength",
-            "title": "Read Length",
-            "description": "The number of nucleotides of this sample read.",
-        },
-        "median_quality": {
-            "alias": "medianQuality",
-            "title": "Median Quality",
-            "description": "The median Phred quality of the sample read.",
-        },
-        "trim_start": {
-            "alias": "trimStart",
-            "title": "Trim Start",
-            "description": "The number of nucleotides trimmed at the beginning "
-            "of the sequence due to low Phred quality and before alignment.",
-        },
-        "trim_end": {
-            "alias": "trimEnd",
-            "title": "Trim End",
-            "description": "The number of nucleotides trimmed at the end "
-            "of the sequence due to low Phred quality and before alignment.",
-        },
-        "details": {"description": "A table of conflicts."},
-        "errors": {"description": "Errors in aligning the sample read."},
-    }
+        Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
+        details.
 
+        """
 
-@dataclass(config=SampleReportConfig)
-class SampleReport:  # noqa: D101
-
-    id: str
-    primer: str
-    read_length: pydantic.PositiveInt
-    median_quality: pydantic.confloat(ge=0.0, le=62.0)
-    trim_start: pydantic.conint(ge=0)
-    trim_end: pydantic.conint(ge=0)
-    details: pydantic.Any
-    errors: typing.List[str] = ()
+        description = "Summarize results for a sample read."
+        validate_all = True
+        validate_assignment = True

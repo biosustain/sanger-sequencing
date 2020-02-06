@@ -24,38 +24,36 @@ import typing
 from pathlib import Path
 
 import pydantic
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel, Field
 
 from .plasmid_report import PlasmidReport
 
 
-class SangerReportConfig:
-    """
-    Configure the `SangerReport` behavior.
+class SangerReport(BaseModel):  # noqa: D101
 
-    Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
-    details.
+    threshold: pydantic.confloat(ge=0.0, le=62.0) = Field(
+        50.0,
+        description="Threshold on the Phred quality score used to ignore low quality "
+        "regions at the beginning and end of a sample read. The Phred score"
+        " scales typically between 0 and 62. A good Sanger sequencing "
+        "read has a score of 55.",
+    )
+    output: pydantic.DirectoryPath = Field(
+        Path.cwd(), description="Output directory for alignment files."
+    )
+    plasmids: typing.List[PlasmidReport] = Field(
+        (), description="A collection of individual plasmid reports."
+    )
 
-    """
+    class Config:
+        """
+        Configure the `SangerReport` behavior.
 
-    description = "Configure and collect multiple plasmid reports."
-    validate_all = True
-    validate_assignment = True
-    fields = {
-        "threshold": {
-            "description": "Threshold on the Phred quality score used to "
-            "ignore low quality regions at the beginning and end of a sample "
-            "read. The Phred score scales typically between 0 and 62. A good "
-            "Sanger sequencing read has a score of 55."
-        },
-        "output": {"description": "Output directory for alignment files."},
-        "plasmids": {"description": "A collection of individual plasmid reports."},
-    }
+        Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
+        details.
 
+        """
 
-@dataclass(config=SangerReportConfig)
-class SangerReport:  # noqa: D101
-
-    threshold: pydantic.confloat(ge=0.0, le=62.0) = 50.0
-    output: pydantic.DirectoryPath = Path.cwd()
-    plasmids: typing.List[PlasmidReport] = ()
+        description = "Configure and collect multiple plasmid reports."
+        validate_all = True
+        validate_assignment = True
