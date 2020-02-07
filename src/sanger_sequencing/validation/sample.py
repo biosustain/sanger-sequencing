@@ -17,14 +17,10 @@
 """Validate a sample sequence record."""
 
 
-import logging
-
 from Bio.SeqRecord import SeqRecord
 
 
 __all__ = ("validate_sample",)
-
-logger = logging.getLogger(__name__)
 
 
 def validate_sample(sample: SeqRecord):

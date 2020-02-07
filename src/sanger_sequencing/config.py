@@ -17,14 +17,10 @@
 """Provide a global configuration singleton."""
 
 
-import logging
 from tempfile import mkdtemp
 
 
 __all__ = ("Configuration",)
-
-
-logger = logging.getLogger(__name__)
 
 
 class Singleton(type):

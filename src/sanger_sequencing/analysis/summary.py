@@ -36,6 +36,7 @@ from ..model import (
 
 __all__ = ("summarize_plasmid_conflicts", "concatenate_sample_reports")
 
+
 logger = logging.getLogger(__name__)
 
 CODON_TABLE = ambiguous_dna_by_name["Standard"].forward_table

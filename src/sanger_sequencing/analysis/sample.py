@@ -27,6 +27,7 @@ from ..config import Configuration
 
 __all__ = ("trim_sample",)
 
+
 logger = logging.getLogger(__name__)
 
 
