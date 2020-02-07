@@ -14,14 +14,13 @@
 # limitations under the License.
 
 
-__author__ = (
-    "Novo Nordisk Foundation Center for Biosustainability, "
-    "Technical University Denmark"
-)
-__email__ = "morbeb@biosustain.dtu.dk"
-from ._version import get_versions
+"""Create top level imports."""
 
-__version__ = get_versions()["version"]
+
+__author__ = "Novo Nordisk Foundation Center for Biosustainability, Technical University of Denmark"
+__email__ = "niso@biosustain.dtu.dk"
+from sanger_sequencing._version import get_versions
+__version__ = get_versions()['version']
 del get_versions
 
 from .helpers import show_versions

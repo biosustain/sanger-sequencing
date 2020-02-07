@@ -1,11 +1,10 @@
 ---
-sudo: false
 language: python
 os:
-  - linux
+- linux
 python:
-  - "3.6"
-  - "3.7-dev"
+- "3.7"
+- "3.8"
 
 git:
   depth: 2
@@ -20,52 +19,47 @@ branches:
 
 env:
   global:
-    - GITHUB_REPO=biosustain/sanger-sequencing
-
-matrix:
-  fast_finish: true
-
-install:
-  - pip install --upgrade pip setuptools wheel tox tox-travis
-
-script:
-  - tox -- --cov-report=xml
-after_success:
-  - bash <(curl -f https://codecov.io/bash)
+  - GITHUB_REPO=biosustain/sanger-sequencing
 
 stages:
-  - test
-  - name: deploy
-    if: tag IS present
+- test
+- name: deploy
+  if: tag IS present
+
+install:
+- pip install --upgrade pip setuptools wheel tox tox-travis
+script:
+- tox -- --cov-report=xml
+after_success:
+- bash <(curl -f https://codecov.io/bash)
 
 jobs:
   fast_finish: true
   include:
-    - stage: deploy
-      python: "3.6"
-      install:
-        - pip install --upgrade setuptools wheel
-      script: skip
-      after_success: echo "Deploying..."
-      deploy:
-        - provider: pypi
-          skip_cleanup: true
-          distributions: sdist bdist_wheel
-          user: $PYPI_USERNAME
-          password: $PYPI_PASSWORD
-          on:
-            tags: true
-            repo: $GITHUB_REPO
-        - provider: releases
-          skip_cleanup: true
-          api_key: $GITHUB_TOKEN
-          body: "Please see https://github.com/${GITHUB_REPO}/blob/${TRAVIS_TAG}/CHANGELOG.rst for the full release notes."
-          on:
-            tags: true
-            repo: $GITHUB_REPO
+  - stage: deploy
+    python: "3.7"
+    install:
+    - pip install --upgrade setuptools wheel
+    script: skip
+    after_success: echo "Deploying..."
+    deploy:
+    - provider: pypi
+      cleanup: false
+      distributions: sdist bdist_wheel
+      username: $PYPI_USERNAME
+      password: $PYPI_PASSWORD
+      on:
+        tags: true
+        repo: $GITHUB_REPO
+    - provider: releases
+      cleanup: false
+      token: $GITHUB_TOKEN
+      release_notes: "Please see https://github.com/${GITHUB_REPO}/blob/${TRAVIS_TAG}/CHANGELOG.rst for the full release notes."
+      on:
+        tags: true
+        repo: $GITHUB_REPO
 
 notifications:
   email:
     on_success: never
     on_failure: always
-    on_pull_requests: never

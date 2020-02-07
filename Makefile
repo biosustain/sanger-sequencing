@@ -9,6 +9,10 @@ qa:
 	isort --recursive src/sanger_sequencing tests/ setup.py
 	black src/sanger_sequencing tests/ setup.py
 
+## Prepare a release by generating the automatic code documentation.
+release:
+	sphinx-apidoc -f -o docs/source/autogen src/sanger_sequencing
+
 ################################################################################
 # Self Documenting Commands                                                    #
 ################################################################################
