@@ -19,11 +19,11 @@
 
 import json
 import logging
+from importlib.resources import open_text
 from typing import Dict, List
 
 from Bio.SeqRecord import SeqRecord
 from goodtables import validate
-from importlib_resources import open_text
 from pandas import DataFrame
 
 from . import schemata
