@@ -26,6 +26,8 @@ import pydantic
 from pandas import DataFrame
 from pydantic import BaseModel, Field
 
+from .conflict_report import ConflictReport, ConflictReportInternal
+
 
 class BaseSampleReport(BaseModel):
     """Define attributes for a base sample report."""
@@ -61,9 +63,6 @@ class BaseSampleReport(BaseModel):
         description="The number of nucleotides trimmed at the end of the sequence due "
         "to low Phred quality and before alignment.",
     )
-    conflicts: typing.Optional[typing.List[dict]] = Field(
-        (), description="A summary of the conflicts detected in this sample read."
-    )
     errors: typing.List[str] = Field(
         (), description="Errors in aligning the sample read."
     )
@@ -77,6 +76,10 @@ class BaseSampleReport(BaseModel):
 class SampleReport(BaseSampleReport):
     """Define attributes for a sample report used in external communication."""
 
+    conflicts: typing.Optional[typing.List[ConflictReport]] = Field(
+        (), description="A summary of the conflicts detected in this sample read."
+    )
+
     class Config(BaseSampleReport.Config):
         """Configure the sample report behavior."""
 
@@ -87,6 +90,9 @@ class SampleReport(BaseSampleReport):
 class SampleReportInternal(BaseSampleReport):
     """Define attributes for an internal plasmid report."""
 
+    conflicts: typing.Optional[typing.List[ConflictReportInternal]] = Field(
+        (), description="A summary of the conflicts detected in this sample read."
+    )
     details: typing.Optional[DataFrame] = Field(
         None, description="A table of conflicts."
     )

@@ -17,6 +17,7 @@
 """Provide report model classes."""
 
 
+from .conflict_report import *
 from .sample_report import *
 from .plasmid_report import *
 from .sanger_report import *
