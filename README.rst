@@ -72,10 +72,14 @@ values and a high level analysis interface.
 
 You can read more about the meaning of those attributes in the configuration
 documentation. The main entry point for doing any kind of analysis is the
-``sanger_verification`` function. This function requires three arguments: a
+``sanger_report`` function. This function requires three arguments: a
 template table of what to analyze, a mapping from plasmid identifiers to their
 sequence records (typically coming from Genbank files), and a mapping from
 sample identifiers to sequence records (``.ab1`` files).
+
+.. code-block:: python
+
+    from sanger_sequencing.api import sanger_report
 
 .. summary-end
 
