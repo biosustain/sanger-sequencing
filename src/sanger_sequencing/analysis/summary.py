@@ -26,7 +26,7 @@ from numpy import isnan, nanmean
 from pandas import DataFrame, concat
 
 from ..config import Configuration
-from ..reports import SampleReportInternal
+from ..model import SampleReportInternal
 
 
 __all__ = ("summarize_plasmid_conflicts", "concatenate_sample_reports")

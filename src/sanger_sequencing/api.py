@@ -32,7 +32,7 @@ from pandas import DataFrame
 from . import analysis, validation
 from .config import Configuration
 from .helpers import log_errors
-from .reports import PlasmidReportInternal, SampleReportInternal, SangerReportInternal
+from .model import PlasmidReportInternal, SampleReportInternal, SangerReportInternal
 
 
 __all__ = ("sanger_report", "plasmid_report", "sample_report")
