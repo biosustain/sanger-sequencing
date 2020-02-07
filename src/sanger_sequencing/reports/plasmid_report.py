@@ -17,33 +17,51 @@
 """Summarize results for an entire plasmid."""
 
 
-__all__ = ("PlasmidReport",)
+__all__ = ("PlasmidReport", "PlasmidReportInternal")
 
 
 import typing
 
 from pydantic import BaseModel, Field
 
-from .sample_report import SampleReport
+from .sample_report import SampleReport, SampleReportInternal
 
 
-class PlasmidReport(BaseModel):  # noqa: D101
+class BasePlasmidReport(BaseModel):
+    """Define attributes for a base plasmid report."""
 
     id: str = Field(..., description="The given identifier for the plasmid.")
     name: str = Field(..., description="A human readable name for the plasmid.")
+
+    class Config:
+        """Configure the base plasmid report behavior."""
+
+        description = "Summarize results for an entire plasmid."
+
+
+class PlasmidReport(BaseModel):
+    """Define attributes for a plasmid report used in external communication."""
+
     samples: typing.List[SampleReport] = Field(
         (), description="A collection of individual sample (read) reports."
     )
 
-    class Config:
-        """
-        Configure the `PlasmidReport` behavior.
+    class Config(BasePlasmidReport.Config):
+        """Configure the plasmid report behavior."""
 
-        Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
-        details.
+        allow_population_by_field_name = True
+        orm_mode = True
 
-        """
 
-        description = "Summarize results for an entire plasmid."
+class PlasmidReportInternal(BaseModel):
+    """Define attributes for an internal plasmid report."""
+
+    samples: typing.List[SampleReportInternal] = Field(
+        (), description="A collection of individual internal sample (read) reports."
+    )
+
+    class Config(BasePlasmidReport.Config):
+        """Configure the internal plasmid report behavior."""
+
         validate_all = True
         validate_assignment = True

@@ -26,7 +26,7 @@ from numpy import isnan, nanmean
 from pandas import DataFrame, concat
 
 from ..config import Configuration
-from ..reports import SampleReport
+from ..reports import SampleReportInternal
 
 
 __all__ = ("summarize_plasmid_conflicts", "concatenate_sample_reports")
@@ -37,7 +37,7 @@ START_CODONS = frozenset(ambiguous_dna_by_name["Standard"].start_codons)
 STOP_CODONS = frozenset(ambiguous_dna_by_name["Standard"].stop_codons)
 
 
-def concatenate_sample_reports(reports: List[SampleReport]) -> DataFrame:
+def concatenate_sample_reports(reports: List[SampleReportInternal]) -> DataFrame:
     """Concatenate many data frames into one."""
     data = []
     for sample in reports:

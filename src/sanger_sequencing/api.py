@@ -32,7 +32,7 @@ from pandas import DataFrame
 from . import analysis, validation
 from .config import Configuration
 from .helpers import log_errors
-from .reports import PlasmidReport, SampleReport, SangerReport
+from .reports import PlasmidReportInternal, SampleReportInternal, SangerReportInternal
 
 
 __all__ = ("sanger_report", "plasmid_report", "sample_report")
@@ -47,7 +47,7 @@ def sanger_report(
     samples: typing.Dict[str, SeqRecord],
     threshold: typing.Optional[float] = None,
     output: typing.Optional[typing.Union[str, Path]] = None,
-) -> SangerReport:
+) -> SangerReportInternal:
     """
     Perform a complete Sanger verification for many plasmids and sample reads.
 
@@ -89,7 +89,7 @@ def sanger_report(
         kwargs["threshold"] = threshold
     if output is not None:
         kwargs["output"] = output
-    report = SangerReport(**kwargs)
+    report = SangerReportInternal(**kwargs)
     # Initialize global singleton with parameters.
     Configuration(threshold=report.threshold, output=report.output)
     logger.info("Validate template.")
@@ -119,7 +119,7 @@ def plasmid_report(
     sequence: SeqRecord,
     template: DataFrame,
     samples: typing.Dict[str, SeqRecord],
-) -> PlasmidReport:
+) -> PlasmidReportInternal:
     """
     Create an analysis report for a single plasmid and one or more reads.
 
@@ -145,7 +145,7 @@ def plasmid_report(
 
     """
     logger.info("Analyze plasmid '%s'.", plasmid_id)
-    report = PlasmidReport(
+    report = PlasmidReportInternal(
         id=plasmid_id,
         name=sequence.name,
         samples=[
@@ -171,7 +171,7 @@ def sample_report(
     primer_id: str,
     plasmid_id: str,
     plasmid_sequence: SeqRecord,
-) -> SampleReport:
+) -> SampleReportInternal:
     """
     Create an analysis report for a single sample read.
 
@@ -195,7 +195,7 @@ def sample_report(
 
     """
     logger.info("Analyze sample '%s'.", sample_id)
-    report = SampleReport(
+    report = SampleReportInternal(
         id=sample_id, primer=primer_id, readLength=len(sample_sequence),
     )
     # Convert to base `float` for JSON compatibility.

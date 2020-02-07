@@ -17,7 +17,7 @@
 """Summarize results for a single sample (read)."""
 
 
-__all__ = ("SampleReport",)
+__all__ = ("SampleReport", "SampleReportInternal")
 
 
 import typing
@@ -27,7 +27,8 @@ from pandas import DataFrame
 from pydantic import BaseModel, Field
 
 
-class SampleReport(BaseModel):  # noqa: D101
+class BaseSampleReport(BaseModel):
+    """Define attributes for a base sample report."""
 
     id: str = Field(..., description="The given identifier for the sample.")
     primer: str = Field(
@@ -60,9 +61,6 @@ class SampleReport(BaseModel):  # noqa: D101
         description="The number of nucleotides trimmed at the end of the sequence due "
         "to low Phred quality and before alignment.",
     )
-    details: typing.Optional[DataFrame] = Field(
-        None, description="A table of conflicts."
-    )
     conflicts: typing.Optional[typing.List[dict]] = Field(
         (), description="A summary of the conflicts detected in this sample read."
     )
@@ -71,16 +69,32 @@ class SampleReport(BaseModel):  # noqa: D101
     )
 
     class Config:
-        """
-        Configure the `SampleReport` behavior.
-
-        Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
-        details.
-
-        """
+        """Configure the base sample report behavior."""
 
         description = "Summarize results for a sample read."
+
+
+class SampleReport(BaseSampleReport):
+    """Define attributes for a sample report used in external communication."""
+
+    class Config(BaseSampleReport.Config):
+        """Configure the sample report behavior."""
+
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
+class SampleReportInternal(BaseSampleReport):
+    """Define attributes for an internal plasmid report."""
+
+    details: typing.Optional[DataFrame] = Field(
+        None, description="A table of conflicts."
+    )
+
+    class Config(BaseSampleReport.Config):
+        """Configure the internal sample report behavior."""
+
+        # Allow the `details` field to be a `pandas.DataFrame`.
+        arbitrary_types_allowed = True
         validate_all = True
         validate_assignment = True
-        # Allow the details field to be a pandas data frame.
-        arbitrary_types_allowed = True

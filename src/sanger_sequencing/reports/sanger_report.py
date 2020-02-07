@@ -17,19 +17,20 @@
 """Summarize results for multiple plasmids and samples."""
 
 
-__all__ = ("SangerReport",)
-
-
 import typing
 from pathlib import Path
 
 import pydantic
 from pydantic import BaseModel, Field
 
-from .plasmid_report import PlasmidReport
+from .plasmid_report import PlasmidReport, PlasmidReportInternal
 
 
-class SangerReport(BaseModel):  # noqa: D101
+__all__ = ("SangerReport", "SangerReportInternal")
+
+
+class BaseSangerReport(BaseModel):
+    """Define attributes for a base Sanger read report."""
 
     threshold: pydantic.confloat(ge=0.0, le=62.0) = Field(
         50.0,
@@ -41,19 +42,36 @@ class SangerReport(BaseModel):  # noqa: D101
     output: pydantic.DirectoryPath = Field(
         Path.cwd(), description="Output directory for alignment files."
     )
+
+    class Config:
+        """Configure the base Sanger report behavior."""
+
+        description = "Configure and collect multiple plasmid reports."
+
+
+class SangerReport(BaseSangerReport):
+    """Define attributes for a Sanger read report used in external communication."""
+
     plasmids: typing.List[PlasmidReport] = Field(
         (), description="A collection of individual plasmid reports."
     )
 
-    class Config:
-        """
-        Configure the `SangerReport` behavior.
+    class Config(BaseSangerReport.Config):
+        """Configure the Sanger report behavior."""
 
-        Please refer to https://pydantic-docs.helpmanual.io/#model-config for more
-        details.
+        allow_population_by_field_name = True
+        orm_mode = True
 
-        """
 
-        description = "Configure and collect multiple plasmid reports."
+class SangerReportInternal(BaseSangerReport):
+    """Define attributes for an internal Sanger read report."""
+
+    plasmids: typing.List[PlasmidReportInternal] = Field(
+        (), description="A collection of individual plasmid reports for internal use."
+    )
+
+    class Config(BaseSangerReport.Config):
+        """Configure the internal Sanger report behavior."""
+
         validate_all = True
         validate_assignment = True
