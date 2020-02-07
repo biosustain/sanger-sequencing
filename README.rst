@@ -14,9 +14,17 @@ Sanger Sequence Analysis
    :target: https://www.apache.org/licenses/LICENSE-2.0
    :alt: Apache Software License Version 2.0
 
+.. image:: https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg
+   :target: https://github.com/biosustain/sanger-sequencing/blob/master/.github/CODE_OF_CONDUCT.md
+   :alt: Code of Conduct
+
 .. image:: https://img.shields.io/travis/biosustain/sanger-sequencing/master.svg?label=Travis%20CI
    :target: https://travis-ci.org/biosustain/sanger-sequencing
    :alt: Travis CI
+
+.. image:: https://ci.appveyor.com/api/projects/status/github/biosustain/sanger-sequencing?branch=master&svg=true
+   :target: https://ci.appveyor.com/project/biosustain/sanger-sequencing
+   :alt: AppVeyor
 
 .. image:: https://codecov.io/gh/biosustain/sanger-sequencing/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/biosustain/sanger-sequencing
@@ -25,6 +33,10 @@ Sanger Sequence Analysis
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/ambv/black
    :alt: Black
+
+.. image:: https://readthedocs.org/projects/sanger-sequencing/badge/?version=latest
+   :target: https://sanger-sequencing.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
 .. summary-start
 
@@ -72,7 +84,7 @@ You can find the complete documentation at: https://sanger-sequencing.readthedoc
 Copyright
 =========
 
-* Copyright © 2018-2019, Novo Nordisk Foundation Center for Biosustainability,
-  Technical University of Denmark
+* Copyright © 2018-2020, Novo Nordisk Foundation Center for Biosustainability,
+  Technical University of Denmark.
 * Free software distributed under the `Apache Software License 2.0
   <https://www.apache.org/licenses/LICENSE-2.0>`_.
