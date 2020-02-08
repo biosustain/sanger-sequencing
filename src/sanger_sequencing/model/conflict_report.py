@@ -18,7 +18,7 @@
 
 
 from enum import Enum
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import pydantic
 from pydantic import BaseModel, Field
@@ -29,6 +29,7 @@ __all__ = (
     "ConflictReportInternal",
     "ConflictTypeEnum",
     "QualityEnum",
+    "SequenceFeature",
 )
 
 
@@ -43,6 +44,13 @@ class QualityEnum(str, Enum):
 
     HIGH = "high"
     LOW = "low"
+
+
+class SequenceFeature(BaseModel):
+    """Define a sequence feature."""
+
+    type: str
+    labels: List[str]
 
 
 class BaseConflictReport(BaseModel):
@@ -70,7 +78,7 @@ class BaseConflictReport(BaseModel):
     num_invalidated: Optional[pydantic.conint(ge=0)] = Field(
         None, alias="numInvalidated", title="Number Invalidated"
     )
-    features_hit: List[Tuple[str, List[str]]] = Field(
+    features_hit: List[SequenceFeature] = Field(
         (), alias="featuresHit", title="Hit Features"
     )
     effect: List[str] = ()

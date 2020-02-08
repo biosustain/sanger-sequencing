@@ -31,6 +31,7 @@ from ..model import (
     ConflictTypeEnum,
     QualityEnum,
     SampleReportInternal,
+    SequenceFeature,
 )
 
 
@@ -120,7 +121,7 @@ def confirm_conflict(conflict_type, row, cover, threshold) -> Tuple[int, int]:
 
 def determine_effects(
     row, plasmid, previous, following
-) -> Tuple[List[Tuple[str, List[str]]], List[str]]:
+) -> Tuple[List[SequenceFeature], List[str]]:
     """
     Post-process conflicts and categorize them.
 
@@ -145,7 +146,9 @@ def determine_effects(
             and feat.location.start.position <= following
         ):
             continue
-        features.append((feat.type, feat.qualifiers.get("label", [])))
+        features.append(
+            SequenceFeature(type=feat.type, labels=feat.qualifiers.get("label", []))
+        )
         if feat.type == "CDS":
             # Potential frame shift (usually rather a sequencing error).
             if isnan(row.plasmid_pos) or isnan(row.sample_pos):
