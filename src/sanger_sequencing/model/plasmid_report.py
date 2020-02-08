@@ -39,7 +39,7 @@ class BasePlasmidReport(BaseModel):
         description = "Summarize results for an entire plasmid."
 
 
-class PlasmidReport(BaseModel):
+class PlasmidReport(BasePlasmidReport):
     """Define attributes for a plasmid report used in external communication."""
 
     samples: typing.List[SampleReport] = Field(
@@ -53,7 +53,7 @@ class PlasmidReport(BaseModel):
         orm_mode = True
 
 
-class PlasmidReportInternal(BaseModel):
+class PlasmidReportInternal(BasePlasmidReport):
     """Define attributes for an internal plasmid report."""
 
     samples: typing.List[SampleReportInternal] = Field(
