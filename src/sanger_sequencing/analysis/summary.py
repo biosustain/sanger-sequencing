@@ -28,6 +28,7 @@ from pandas import DataFrame, concat
 from ..config import Configuration
 from ..model import (
     ConflictReportInternal,
+    ConflictStatusEnum,
     ConflictTypeEnum,
     QualityEnum,
     SampleReportInternal,
@@ -251,6 +252,12 @@ def summarize_plasmid_conflicts(
         conflict.num_confirmed, conflict.num_invalidated = confirm_conflict(
             conflict.type, row, cover, config.threshold
         )
+        if conflict.num_confirmed > 0 and conflict.num_invalidated == 0:
+            conflict.status = ConflictStatusEnum.UNRESOLVED
+        elif conflict.num_confirmed == 0 and conflict.num_invalidated > 0:
+            conflict.status = ConflictStatusEnum.RESOLVED
+        else:
+            conflict.status = ConflictStatusEnum.POTENTIAL
         # Add feature data.
         conflict.features_hit, conflict.effect = determine_effects(
             row, plasmid, region["plasmid_pos"].min(), region["plasmid_pos"].max(),

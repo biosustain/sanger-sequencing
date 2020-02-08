@@ -27,6 +27,7 @@ from pydantic import BaseModel, Field
 __all__ = (
     "ConflictReport",
     "ConflictReportInternal",
+    "ConflictStatusEnum",
     "ConflictTypeEnum",
     "QualityEnum",
     "SequenceFeature",
@@ -44,6 +45,13 @@ class QualityEnum(str, Enum):
 
     HIGH = "high"
     LOW = "low"
+
+
+class ConflictStatusEnum(str, Enum):
+
+    RESOLVED = "resolved"
+    UNRESOLVED = "unresolved"
+    POTENTIAL = "potential"
 
 
 class SequenceFeature(BaseModel):
@@ -78,6 +86,7 @@ class BaseConflictReport(BaseModel):
     num_invalidated: Optional[pydantic.conint(ge=0)] = Field(
         None, alias="numInvalidated", title="Number Invalidated"
     )
+    status: Optional[ConflictStatusEnum] = None
     features_hit: List[SequenceFeature] = Field(
         (), alias="featuresHit", title="Hit Features"
     )
