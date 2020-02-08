@@ -39,9 +39,6 @@ class BaseSangerReport(BaseModel):
         " scales typically between 0 and 62. A good Sanger sequencing "
         "read has a score of 55.",
     )
-    output: pydantic.DirectoryPath = Field(
-        Path.cwd(), description="Output directory for alignment files."
-    )
 
     class Config:
         """Configure the base Sanger report behavior."""
@@ -66,6 +63,9 @@ class SangerReport(BaseSangerReport):
 class SangerReportInternal(BaseSangerReport):
     """Define attributes for an internal Sanger read report."""
 
+    output: pydantic.DirectoryPath = Field(
+        Path.cwd(), description="Output directory for alignment files."
+    )
     plasmids: typing.List[PlasmidReportInternal] = Field(
         (), description="A collection of individual plasmid reports for internal use."
     )
