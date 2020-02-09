@@ -29,6 +29,8 @@ __all__ = (
     "ConflictReportInternal",
     "ConflictStatusEnum",
     "ConflictTypeEnum",
+    "Effect",
+    "EffectTypeEnum",
     "QualityEnum",
     "SequenceFeature",
 )
@@ -54,11 +56,28 @@ class ConflictStatusEnum(str, Enum):
     POTENTIAL = "potential"
 
 
+class EffectTypeEnum(str, Enum):
+
+    FRAME_SHIFT = "frame shift"
+    UKNOWN = "unknown"
+    AA_CHANGE = "amino acid change"
+
+
 class SequenceFeature(BaseModel):
     """Define a sequence feature."""
 
     type: str
     labels: List[str]
+
+
+class Effect(BaseModel):
+    """Deine the effect of sequence changes."""
+
+    type: EffectTypeEnum
+    plasmid_aa: Optional[str] = Field(
+        None, alias="plasmidAA", title="Plasmid Amino Acid"
+    )
+    sample_aa: Optional[str] = Field(None, alias="sampleAA", title="Sample Amino Acid")
 
 
 class BaseConflictReport(BaseModel):
@@ -90,7 +109,7 @@ class BaseConflictReport(BaseModel):
     features_hit: List[SequenceFeature] = Field(
         (), alias="featuresHit", title="Hit Features"
     )
-    effect: List[str] = ()
+    effects: List[Effect] = ()
 
     class Config:
         """Configure the base conflict report behavior."""

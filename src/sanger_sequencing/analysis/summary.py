@@ -30,6 +30,8 @@ from ..model import (
     ConflictReportInternal,
     ConflictStatusEnum,
     ConflictTypeEnum,
+    Effect,
+    EffectTypeEnum,
     QualityEnum,
     SampleReportInternal,
     SequenceFeature,
@@ -122,7 +124,7 @@ def confirm_conflict(conflict_type, row, cover, threshold) -> Tuple[int, int]:
 
 def determine_effects(
     row, plasmid, previous, following
-) -> Tuple[List[SequenceFeature], List[str]]:
+) -> Tuple[List[SequenceFeature], List[Effect]]:
     """
     Post-process conflicts and categorize them.
 
@@ -153,7 +155,7 @@ def determine_effects(
         if feat.type == "CDS":
             # Potential frame shift (usually rather a sequencing error).
             if isnan(row.plasmid_pos) or isnan(row.sample_pos):
-                effects.append("Frame shift")
+                effects.append(Effect(type=EffectTypeEnum.FRAME_SHIFT))
                 continue
             # Does the new codon cause an amino acid change?
             seq = feat.extract(plasmid)
@@ -164,36 +166,37 @@ def determine_effects(
             codon = list(seq[(feat_pos - codon_pos) : (feat_pos - codon_pos + 3)])
             if len(codon) < 3:
                 logger.error("SNP at the beginning or end of CDS. " "Unknown effect.")
-                effects.append("Unknown")
+                effects.append(Effect(type=EffectTypeEnum.UKNOWN))
                 continue
+            effect = Effect(type=EffectTypeEnum.AA_CHANGE)
             cdn = "".join(codon)
             try:
-                plasmid_aa = CODON_TABLE[cdn]
+                effect.plasmid_aa = CODON_TABLE[cdn]
             except (KeyError, ValueError):
                 if cdn in START_CODONS:
                     logger.warning("Start codon hit on plasmid.")
-                    plasmid_aa = "START"
+                    effect.plasmid_aa = "START"
                 elif cdn in STOP_CODONS:
                     logger.warning("Stop codon hit on plasmid.")
-                    plasmid_aa = "STOP"
+                    effect.plasmid_aa = "STOP"
                 else:
                     logger.error("Unknown codon '%s' on plasmid.", cdn)
-                    plasmid_aa = "UNKNOWN"
+                    effect.plasmid_aa = "UNKNOWN"
             codon[codon_pos] = row.sample_chr
             cdn = "".join(codon)
             try:
-                sample_aa = CODON_TABLE[cdn]
+                effect.sample_aa = CODON_TABLE[cdn]
             except (KeyError, ValueError):
                 if cdn in START_CODONS:
                     logger.warning("Change to start codon on sample.")
-                    sample_aa = "START"
+                    effect.sample_aa = "START"
                 elif cdn in STOP_CODONS:
                     logger.warning("Change to stop codon on sample.")
-                    sample_aa = "STOP"
+                    effect.sample_aa = "STOP"
                 else:
                     logger.error("Unknown codon '%s' on sample.", cdn)
-                    sample_aa = "UNKNOWN"
-            effects.append(f"{plasmid_aa} -> {sample_aa}")
+                    effect.sample_aa = "UNKNOWN"
+            effects.append(effect)
     return features, effects
 
 
@@ -259,7 +262,7 @@ def summarize_plasmid_conflicts(
         else:
             conflict.status = ConflictStatusEnum.POTENTIAL
         # Add feature data.
-        conflict.features_hit, conflict.effect = determine_effects(
+        conflict.features_hit, conflict.effects = determine_effects(
             row, plasmid, region["plasmid_pos"].min(), region["plasmid_pos"].max(),
         )
         conflicts.append(conflict)
