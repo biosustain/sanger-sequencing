@@ -134,7 +134,7 @@ def emboss_alignment(
     if identity < 0.9:
         logger.info("Trying reverse complement!")
         cmd.bsequence = f"asis:{sample_sequence.reverse_complement().seq}"
-        rev_outfile = join(config.output, "{sample_id}_{plasmid_id}_rev.txt")
+        rev_outfile = join(config.output, f"{sample_id}_{plasmid_id}_rev.txt")
         cmd.outfile = rev_outfile
         stdout, stderr = cmd()
         logger.debug(stdout)

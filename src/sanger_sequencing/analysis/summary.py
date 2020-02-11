@@ -20,7 +20,7 @@
 import logging
 from typing import List, Tuple
 
-from Bio.Data.CodonTable import ambiguous_dna_by_name
+from Bio.Data.CodonTable import TranslationError, ambiguous_dna_by_name
 from Bio.SeqRecord import SeqRecord
 from numpy import isnan, nanmean
 from pandas import DataFrame, concat
@@ -172,7 +172,7 @@ def determine_effects(
             cdn = "".join(codon)
             try:
                 effect.plasmid_aa = CODON_TABLE[cdn]
-            except (KeyError, ValueError):
+            except (KeyError, ValueError, TranslationError):
                 if cdn in START_CODONS:
                     logger.warning("Start codon hit on plasmid.")
                     effect.plasmid_aa = "START"
@@ -186,7 +186,7 @@ def determine_effects(
             cdn = "".join(codon)
             try:
                 effect.sample_aa = CODON_TABLE[cdn]
-            except (KeyError, ValueError):
+            except (KeyError, ValueError, TranslationError):
                 if cdn in START_CODONS:
                     logger.warning("Change to start codon on sample.")
                     effect.sample_aa = "START"
